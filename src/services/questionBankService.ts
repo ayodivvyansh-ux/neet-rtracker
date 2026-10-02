@@ -149,8 +149,10 @@ export async function fetchQuestionBankList(params: QuestionBankFilterParams): P
     const rawOptions: QuestionOptionRecord[] = row.options || [];
     rawOptions.sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0) || a.option_key.localeCompare(b.option_key));
     const mergedImages = mergeQuestionImages(row);
+    const rawChapterName = row.chapter_name || row.chapter_slug || 'General';
     return {
       ...row,
+      chapter_name: formatChapterDisplayName(rawChapterName, row.chapter_slug, row.subject),
       images: mergedImages,
       options: rawOptions
     };
@@ -192,47 +194,127 @@ export async function fetchQuestionById(idOrCode: string): Promise<QuestionBankR
   const rawOptions: QuestionOptionRecord[] = data.options || [];
   rawOptions.sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0) || a.option_key.localeCompare(b.option_key));
   const mergedImages = mergeQuestionImages(data);
+  const rawChapterName = data.chapter_name || data.chapter_slug || 'General';
 
   return {
     ...data,
+    chapter_name: formatChapterDisplayName(rawChapterName, data.chapter_slug, data.subject),
     images: mergedImages,
     options: rawOptions
   };
 }
 
 /**
+ * Formats chapter display names with distinct labels for overlapping subjects.
+ * e.g., Biomolecules in Chemistry -> "Biomolecules (Chem)"
+ *       Biomolecules / Biomolecules B in Biology/Botany/Zoology -> "Biomolecules (Bio)"
+ */
+export function formatChapterDisplayName(
+  chapterName?: string | null,
+  chapterSlug?: string | null,
+  subject?: string | null
+): string {
+  const normSlug = (chapterSlug || '').toLowerCase().trim();
+  const normSubj = (subject || '').toLowerCase().trim();
+  const normName = (chapterName || '').trim();
+
+  // Explicit existing labels
+  if (normName === 'Biomolecules (Chem)') return 'Biomolecules (Chem)';
+  if (normName === 'Biomolecules (Bio)') return 'Biomolecules (Bio)';
+
+  // If Biomolecules B or Biology/Botany/Zoology Biomolecules -> Biomolecules (Bio)
+  if (
+    normSlug === 'biomolecules-b' ||
+    normName.toLowerCase() === 'biomolecules b' ||
+    (normSlug === 'biomolecules' && (normSubj.includes('bot') || normSubj.includes('zoo') || normSubj.includes('bio'))) ||
+    (normName.toLowerCase() === 'biomolecules' && (normSubj.includes('bot') || normSubj.includes('zoo') || normSubj.includes('bio')))
+  ) {
+    return 'Biomolecules (Bio)';
+  }
+
+  // If Chemistry Biomolecules or general Biomolecules -> Biomolecules (Chem)
+  if (
+    (normSlug === 'biomolecules' && normSubj.includes('chem')) ||
+    (normName.toLowerCase() === 'biomolecules' && normSubj.includes('chem')) ||
+    normSlug === 'biomolecules' ||
+    normName.toLowerCase() === 'biomolecules'
+  ) {
+    return 'Biomolecules (Chem)';
+  }
+
+  return normName || chapterSlug || 'General';
+}
+
+export interface DistinctChapterItem {
+  chapter_slug: string;
+  chapter_name: string;
+  display_name: string;
+  subject: string;
+  count: number;
+}
+
+/**
  * Fetch dynamic distinct chapters from question_bank
  */
-export async function fetchDistinctChapters(subject?: string): Promise<{ chapter_slug: string; chapter_name: string; subject: string; count: number }[]> {
-  let query = supabase
-    .from('question_bank')
-    .select('chapter_slug, chapter_name, subject');
+export async function fetchDistinctChapters(subject?: string): Promise<DistinctChapterItem[]> {
+  let allRows: { chapter_slug?: string; chapter_name?: string; subject?: string }[] = [];
+  let page = 0;
+  const pageSize = 1000;
 
-  if (subject && subject !== 'All') {
-    query = query.ilike('subject', `%${subject}%`);
+  while (true) {
+    let query = supabase
+      .from('question_bank')
+      .select('chapter_slug, chapter_name, subject');
+
+    if (subject && subject !== 'All') {
+      if (subject.toLowerCase() === 'biology') {
+        query = query.or('subject.ilike.%biology%,subject.ilike.%botany%,subject.ilike.%zoology%,chapter_slug.eq.biomolecules-b');
+      } else {
+        query = query.ilike('subject', `%${subject}%`);
+      }
+    }
+
+    const { data, error } = await query.range(page * pageSize, (page + 1) * pageSize - 1);
+
+    if (error || !data || data.length === 0) {
+      if (error && page === 0) {
+        console.warn('[Question Bank] Distinct chapters fetch error:', error);
+      }
+      break;
+    }
+
+    allRows = allRows.concat(data);
+    if (data.length < pageSize) break;
+    page++;
   }
 
-  const { data, error } = await query.limit(2000);
-
-  if (error || !data) {
-    console.warn('[Question Bank] Distinct chapters fetch error:', error);
-    return [];
-  }
-
-  const map = new Map<string, { chapter_slug: string; chapter_name: string; subject: string; count: number }>();
-  for (const item of data) {
+  const map = new Map<string, DistinctChapterItem>();
+  for (const item of allRows) {
     const slug = item.chapter_slug || item.chapter_name?.toLowerCase().replace(/[^a-z0-9]/g, '_') || 'general';
-    const name = item.chapter_name || slug.replace(/_/g, ' ');
-    const subj = item.subject || 'General';
+    const rawName = item.chapter_name || slug.replace(/_/g, ' ');
+    let subj = item.subject || 'General';
+
+    // If chapter is biomolecules-b, classify under Biology/Botany if subject was generic/chem
+    if (slug === 'biomolecules-b') {
+      subj = 'Biology';
+    }
+
+    const displayName = formatChapterDisplayName(rawName, slug, subj);
     const key = `${subj}::${slug}`;
     if (!map.has(key)) {
-      map.set(key, { chapter_slug: slug, chapter_name: name, subject: subj, count: 1 });
+      map.set(key, {
+        chapter_slug: slug,
+        chapter_name: rawName,
+        display_name: displayName,
+        subject: subj,
+        count: 1
+      });
     } else {
       map.get(key)!.count++;
     }
   }
 
-  return Array.from(map.values()).sort((a, b) => a.chapter_name.localeCompare(b.chapter_name));
+  return Array.from(map.values()).sort((a, b) => a.display_name.localeCompare(b.display_name));
 }
 
 /**
@@ -538,7 +620,7 @@ export async function generateCbtTestSession(config: CbtTestConfig): Promise<Cbt
       question_code: q.question_code,
       exam_source: q.exam_source,
       subject: q.subject,
-      chapter_name: q.chapter_name || q.chapter_slug || 'General',
+      chapter_name: formatChapterDisplayName(q.chapter_name || q.chapter_slug, q.chapter_slug, q.subject),
       chapter_slug: q.chapter_slug,
       year: q.year,
       paper_slug: q.paper_slug,

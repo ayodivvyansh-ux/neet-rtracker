@@ -6,7 +6,9 @@
 import React, { useState, useEffect } from 'react';
 import {
   fetchDistinctChapters,
-  generateCbtTestSession
+  generateCbtTestSession,
+  DistinctChapterItem,
+  formatChapterDisplayName
 } from '../services/questionBankService';
 import { CbtTestConfig, CbtTestSession, Subject } from '../types';
 import {
@@ -43,7 +45,7 @@ export const CreateTest: React.FC<CreateTestProps> = ({
   const [mode, setMode] = useState<'chapterwise' | 'multi_chapter' | 'full_syllabus'>('full_syllabus');
 
   // Dynamic chapters loaded from database
-  const [availableChapters, setAvailableChapters] = useState<{ chapter_slug: string; chapter_name: string; subject: string; count: number }[]>([]);
+  const [availableChapters, setAvailableChapters] = useState<DistinctChapterItem[]>([]);
   const [loadingChapters, setLoadingChapters] = useState<boolean>(true);
 
   // Generation status
@@ -69,6 +71,17 @@ export const CreateTest: React.FC<CreateTestProps> = ({
   // Filter chapters by current selected subject
   const displayedChapters = availableChapters.filter((c) => {
     if (subject === 'All') return true;
+    if (subject.toLowerCase() === 'biology') {
+      return (
+        c.subject.toLowerCase() === 'biology' ||
+        c.subject.toLowerCase() === 'botany' ||
+        c.subject.toLowerCase() === 'zoology' ||
+        c.chapter_slug === 'biomolecules-b'
+      );
+    }
+    if (subject.toLowerCase() === 'chemistry') {
+      return c.subject.toLowerCase() === 'chemistry' && c.chapter_slug !== 'biomolecules-b';
+    }
     return c.subject.toLowerCase() === subject.toLowerCase();
   });
 
@@ -328,7 +341,7 @@ export const CreateTest: React.FC<CreateTestProps> = ({
                     const isSelected = selectedChapters.includes(c.chapter_slug);
                     return (
                       <button
-                        key={c.chapter_slug}
+                        key={`${c.subject}-${c.chapter_slug}`}
                         type="button"
                         onClick={() => toggleChapterSelection(c.chapter_slug)}
                         className={`p-2 rounded text-left text-xs transition-colors flex items-center justify-between ${
@@ -337,7 +350,7 @@ export const CreateTest: React.FC<CreateTestProps> = ({
                             : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
                         }`}
                       >
-                        <span className="truncate pr-2">{c.chapter_name}</span>
+                        <span className="truncate pr-2">{c.display_name || c.chapter_name}</span>
                         <span className={`text-[10px] tabular-nums ${isSelected ? 'text-blue-100' : 'text-slate-400'}`}>
                           {c.count} Qs
                         </span>

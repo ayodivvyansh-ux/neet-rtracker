@@ -8,7 +8,9 @@ import {
   fetchDistinctChapters,
   fetchDistinctExams,
   fetchDistinctYears,
-  fetchQuestionBankList
+  fetchQuestionBankList,
+  DistinctChapterItem,
+  formatChapterDisplayName
 } from '../services/questionBankService';
 import { QuestionBankFilterParams, QuestionBankRecord } from '../types';
 import { MathRenderer } from './MathRenderer';
@@ -42,7 +44,7 @@ export const QuestionLibrary: React.FC<QuestionLibraryProps> = ({ onSelectQuesti
 
   // Dynamic filter option lists from Supabase
   const [examOptions, setExamOptions] = useState<string[]>(['NEET', 'JEE Main']);
-  const [chapterOptions, setChapterOptions] = useState<{ chapter_slug: string; chapter_name: string; subject: string }[]>([]);
+  const [chapterOptions, setChapterOptions] = useState<DistinctChapterItem[]>([]);
   const [yearOptions, setYearOptions] = useState<number[]>([]);
 
   // Selected filter states
@@ -85,6 +87,17 @@ export const QuestionLibrary: React.FC<QuestionLibraryProps> = ({ onSelectQuesti
   // Filter chapters whenever Subject changes
   const filteredChapters = chapterOptions.filter((c) => {
     if (selectedSubject === 'All') return true;
+    if (selectedSubject.toLowerCase() === 'biology') {
+      return (
+        c.subject.toLowerCase() === 'biology' ||
+        c.subject.toLowerCase() === 'botany' ||
+        c.subject.toLowerCase() === 'zoology' ||
+        c.chapter_slug === 'biomolecules-b'
+      );
+    }
+    if (selectedSubject.toLowerCase() === 'chemistry') {
+      return c.subject.toLowerCase() === 'chemistry' && c.chapter_slug !== 'biomolecules-b';
+    }
     return c.subject.toLowerCase() === selectedSubject.toLowerCase();
   });
 
@@ -270,8 +283,8 @@ export const QuestionLibrary: React.FC<QuestionLibraryProps> = ({ onSelectQuesti
             >
               <option value="All">All Chapters</option>
               {filteredChapters.map((c) => (
-                <option key={c.chapter_slug} value={c.chapter_slug}>
-                  {c.chapter_name}
+                <option key={`${c.subject}-${c.chapter_slug}`} value={c.chapter_slug}>
+                  {c.display_name || c.chapter_name}
                 </option>
               ))}
             </select>

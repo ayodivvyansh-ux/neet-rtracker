@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
 import katex from 'katex';
 import DOMPurify from 'dompurify';
 import {
@@ -34,19 +34,24 @@ function sanitizeTrustedHtml(rawHtml: string): string {
     ADD_TAGS: [
       'math', 'semantics', 'annotation', 'annotation-xml', 'mrow', 'mn', 'mi', 'mo', 'ms',
       'mspace', 'mover', 'munder', 'munderover', 'msup', 'msub', 'msubsup', 'mfrac',
-      'mroot', 'msqrt', 'mtable', 'mtr', 'mtd', 'img'
+      'mroot', 'msqrt', 'mtable', 'mtr', 'mtd', 'img', 'svg', 'path', 'span', 'div'
     ],
     ADD_ATTR: [
       'aria-hidden', 'xmlns', 'viewBox', 'preserveAspectRatio', 'encoding',
       'mathvariant', 'display', 'class', 'style', 'loading', 'decoding',
-      'src', 'alt', 'width', 'height', 'referrerpolicy'
+      'src', 'alt', 'width', 'height', 'referrerpolicy', 'd', 'fill', 'stroke',
+      'stroke-width', 'stroke-linecap', 'stroke-linejoin'
     ]
   });
 }
 
 /**
- * Processes inline image tags to replace raw Wegenz URLs with signed URLs if available,
- * or removes unresolvable inline question images so QuestionImage can handle them cleanly.
+ * Processes inline image tags during synchronous rendering.
+ * - Leaves signed URLs and data URLs intact.
+ * - Applies cached signed URLs if available.
+ * - While asynchronous resolution is pending, renders a neutral loading placeholder
+ *   so the browser does not attempt to fetch unresolvable raw source paths.
+ * - NEVER deletes or strips image elements.
  */
 function cleanInlineImages(html: string, isOption: boolean = false): string {
   if (!html) return '';
@@ -57,22 +62,24 @@ function cleanInlineImages(html: string, isOption: boolean = false): string {
       return match;
     }
 
-    // Try resolving from cache
+    // Try resolving from cache if available
     const cachedSigned = getCachedSignedUrl(src);
     if (cachedSigned) {
       return `<img${before}src="${cachedSigned}"${after}>`;
     }
 
-    // For options, if not signed yet, keep structure without breaking
-    if (isOption) {
-      return match;
-    }
-
-    // In question body, remove the raw unresolvable img tag because QuestionImage
-    // is rendered dedicatedly with caption, zoom, and fallback state below the question text.
-    // This prevents the browser from showing a broken image icon with raw filename alt text.
-    if (src.includes('/figures/') || src.includes('/neet/') || src.includes('/jee/') || src.startsWith('images/')) {
-      return '';
+    // While asynchronous transformation is pending, show neutral loading placeholder
+    if (
+      src.includes('/figures/') ||
+      src.includes('/neet/') ||
+      src.includes('/jee/') ||
+      src.startsWith('images/') ||
+      src.includes('cdn.jsdelivr.net')
+    ) {
+      if (isOption) {
+        return `<span class="inline-flex items-center gap-1 px-1.5 py-0.5 text-xs text-slate-400 font-sans">[Loading diagram...]</span>`;
+      }
+      return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 my-1.5 bg-slate-100/90 border border-slate-200 rounded text-xs text-slate-500 font-sans"><svg class="animate-spin w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span>Loading diagram...</span></span>`;
     }
 
     return match;
@@ -80,9 +87,7 @@ function cleanInlineImages(html: string, isOption: boolean = false): string {
 }
 
 /**
- * Renders trusted question HTML.
- * If HTML is already compiled with KaTeX/MathML, sanitizes and returns.
- * If it contains raw LaTeX delimiters without KaTeX markup, compiles them.
+ * Renders trusted question HTML with KaTeX and MathML preservation.
  */
 export function renderTrustedQuestionHtml(rawHtml: string): string {
   if (!rawHtml || !rawHtml.trim()) return '';
@@ -100,7 +105,7 @@ export function renderTrustedQuestionHtml(rawHtml: string): string {
 }
 
 /**
- * Renders trusted option HTML.
+ * Renders trusted option HTML with KaTeX and MathML preservation.
  */
 export function renderTrustedOptionHtml(rawHtml: string): string {
   if (!rawHtml || !rawHtml.trim()) return '';
@@ -250,10 +255,11 @@ function unescapeHtml(str: string): string {
 }
 
 /**
- * Unified Component: exactly ONE content rendering path.
- * If html is provided and non-empty: renders html ONLY.
+ * Unified Component: exactly ONE authoritative content rendering path.
+ * If html is provided and non-empty: renders html with async image transformation.
+ * If image resolution is pending, renders neutral loading state without deleting the image.
+ * Uses a cancellation guard (currentKeyRef) to prevent races across question navigation.
  * Otherwise renders text through math renderer.
- * Never renders both.
  */
 export const MathRenderer: React.FC<MathRendererProps> = ({
   text,
@@ -261,35 +267,54 @@ export const MathRenderer: React.FC<MathRendererProps> = ({
   className = '',
   as = 'div',
   images,
-  questionCode,
+  questionCode = 'UNKNOWN',
   isOption = false
 }) => {
-  const [asyncHtml, setAsyncHtml] = useState<string | null>(null);
+  const hasEmbeddedImg = Boolean(html && /<img\b[^>]*>/i.test(html));
+  const [resolvedHtml, setResolvedHtml] = useState<string | null>(null);
+  const currentKeyRef = useRef<string>('');
 
   useEffect(() => {
-    let active = true;
-    if (html && html.includes('<img')) {
-      transformEmbeddedHtmlImages(html, images, questionCode, isOption).then((transformed) => {
-        if (active) {
-          setAsyncHtml(transformed);
+    const activeKey = `${questionCode}::${html || ''}`;
+    currentKeyRef.current = activeKey;
+
+    if (!html || !html.trim()) {
+      setResolvedHtml(null);
+      return;
+    }
+
+    if (!hasEmbeddedImg) {
+      setResolvedHtml(null);
+      return;
+    }
+
+    let isCurrent = true;
+    transformEmbeddedHtmlImages(html, images, questionCode, isOption)
+      .then((transformed) => {
+        if (isCurrent && currentKeyRef.current === activeKey) {
+          setResolvedHtml(transformed);
+        }
+      })
+      .catch((err) => {
+        console.warn('[MathRenderer] Image transform error:', err);
+        if (isCurrent && currentKeyRef.current === activeKey) {
+          setResolvedHtml(html);
         }
       });
-    } else {
-      setAsyncHtml(null);
-    }
+
     return () => {
-      active = false;
+      isCurrent = false;
     };
-  }, [html, images, questionCode, isOption]);
+  }, [html, images, questionCode, isOption, hasEmbeddedImg]);
 
   const content = useMemo(() => {
-    const effectiveHtml = asyncHtml !== null ? asyncHtml : html;
-
-    // 1. Primary path: if html is present and non-empty, render HTML ONLY
-    if (effectiveHtml && effectiveHtml.trim()) {
+    // 1. Primary path: HTML provided
+    if (html && html.trim()) {
+      // If we have an embedded image and resolution is ready, use resolvedHtml
+      const htmlToRender = resolvedHtml !== null ? resolvedHtml : html;
       return isOption
-        ? renderTrustedOptionHtml(effectiveHtml)
-        : renderTrustedQuestionHtml(effectiveHtml);
+        ? renderTrustedOptionHtml(htmlToRender)
+        : renderTrustedQuestionHtml(htmlToRender);
     }
 
     // 2. Pure text fallback path: when html does NOT exist
@@ -298,7 +323,7 @@ export const MathRenderer: React.FC<MathRendererProps> = ({
     }
 
     return '';
-  }, [asyncHtml, html, text, isOption]);
+  }, [html, resolvedHtml, text, isOption]);
 
   const Component = as;
 

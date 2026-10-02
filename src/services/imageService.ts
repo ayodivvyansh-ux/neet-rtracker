@@ -14,6 +14,7 @@ export interface ImageResolutionResult {
   url: string | null;
   source: 'signed_storage' | 'legacy_data' | 'public_url' | 'unavailable' | 'error';
   error?: string | null;
+  rawResult?: any;
 }
 
 /**
@@ -334,6 +335,10 @@ export async function resolveQuestionImage(
       currentUser = false;
     }
 
+    const rawResult = signedUrl
+      ? { signedUrl }
+      : (resolverError ? { message: resolverError.message, status: resolverError.status, code: resolverError.code } : createSignedUrlData);
+
     console.log({
       questionCode,
       storageBucket,
@@ -356,23 +361,24 @@ export async function resolveQuestionImage(
         imageItem.local_path || '',
         imageItem.source_local_path || ''
       ]);
-      return { url: signedUrl, source: 'signed_storage' };
+      return { url: signedUrl, source: 'signed_storage', rawResult };
     }
 
     // Strictly return error without fabricating fake unsigned URLs
     return {
       url: null,
       source: 'error',
-      error: resolverError?.message || 'Storage object could not be signed'
+      error: resolverError?.message || 'Storage object could not be signed',
+      rawResult
     };
   }
 
   // 2. Priority B: Legacy data_url
   if (imageItem.data_url?.startsWith('data:')) {
-    return { url: imageItem.data_url, source: 'legacy_data' };
+    return { url: imageItem.data_url, source: 'legacy_data', rawResult: { data_url: true } };
   }
   if (imageItem.url?.startsWith('data:')) {
-    return { url: imageItem.url, source: 'legacy_data' };
+    return { url: imageItem.url, source: 'legacy_data', rawResult: { url: true } };
   }
 
   // Direct external HTTPS URL if provided (and not a local/wegenz source path)
@@ -382,11 +388,23 @@ export async function resolveQuestionImage(
     !imageItem.url.includes('/neet/figures/') &&
     !imageItem.url.includes('/jee/figures/')
   ) {
-    return { url: imageItem.url, source: 'public_url' };
+    return { url: imageItem.url, source: 'public_url', rawResult: { public_url: imageItem.url } };
   }
 
   // 3. Priority C: Unavailable state (clean error, never raw Wegenz URLs)
-  return { url: null, source: 'unavailable', error: 'No storage asset available' };
+  return { url: null, source: 'unavailable', error: 'No storage asset available', rawResult: null };
+}
+
+/**
+ * Helper to escape HTML attributes safely.
+ */
+function escapeHtmlAttr(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 }
 
 /**
@@ -394,7 +412,7 @@ export async function resolveQuestionImage(
  * Replaces matching embedded <img src="..."> with the signed Supabase Storage URL.
  *
  * Temporarily logs debug info according to instructions:
- * { questionCode, embeddedImageSrc, matchedImageId, storageBucket, storagePath, isAvailable, signedUrlCreated, duplicateDetected, finalRenderedSrc }
+ * { questionCode, embeddedImageSrc, matchedImageId, storageBucket, storagePath, isAvailable, createSignedUrlResult, finalRenderedSrc }
  */
 export async function transformEmbeddedHtmlImages(
   rawHtml: string | null | undefined,
@@ -406,6 +424,7 @@ export async function transformEmbeddedHtmlImages(
 
   const imgTagRegex = /<img([^>]+)>/gi;
   const srcAttrRegex = /\bsrc=["']([^"']+)["']/i;
+  const altAttrRegex = /\balt=["']([^"']+)["']/i;
 
   let hasMatches = false;
   const promises: Promise<{ originalTag: string; replacementTag: string }>[] = [];
@@ -418,12 +437,25 @@ export async function transformEmbeddedHtmlImages(
     if (!srcMatch) continue;
 
     const originalSrc = srcMatch[1];
+    const altMatch = altAttrRegex.exec(fullImgTag);
+    const originalAlt = altMatch ? altMatch[1] : '';
+
     hasMatches = true;
 
     promises.push(
       (async () => {
         // If already signed or data URL, preserve as-is
         if (originalSrc.includes('/storage/v1/object/sign/') || originalSrc.startsWith('data:')) {
+          console.log({
+            questionCode,
+            embeddedImageSrc: originalSrc,
+            matchedImageId: 'already_signed',
+            storageBucket: 'direct',
+            storagePath: 'direct',
+            isAvailable: true,
+            createSignedUrlResult: { signedUrl: originalSrc },
+            finalRenderedSrc: originalSrc
+          });
           return { originalTag: fullImgTag, replacementTag: fullImgTag };
         }
 
@@ -437,62 +469,71 @@ export async function transformEmbeddedHtmlImages(
             storageBucket: 'cached',
             storagePath: 'cached',
             isAvailable: true,
-            signedUrlCreated: true,
-            duplicateDetected: true,
+            createSignedUrlResult: { signedUrl: cachedSigned },
             finalRenderedSrc: cachedSigned
           });
+          const cleanTag = fullImgTag
+            .replace(/\bsrc=["'][^"']+["']/i, `src="${cachedSigned}"`)
+            .replace(/\bclass=["'][^"']*["']/i, '')
+            .replace(/>$/, ' class="max-h-72 object-contain mx-auto my-2.5 rounded-lg border border-slate-200 bg-white p-1.5 shadow-xs" />');
           return {
             originalTag: fullImgTag,
-            replacementTag: fullImgTag.replace(srcMatch[0], `src="${cachedSigned}"`)
+            replacementTag: cleanTag
           };
         }
 
-        // 2. Find matching image from metadata
-        const matched = findMatchingImage(originalSrc, questionImages);
+        // 2. Find matching image from metadata (using src, alt, and fallback if only 1 image exists)
+        let matched = findMatchingImage(originalSrc, questionImages);
+        if (!matched && originalAlt) {
+          matched = findMatchingImage(originalAlt, questionImages);
+        }
+        if (!matched && questionImages && questionImages.length === 1 && !isOption) {
+          // If exactly 1 image exists on question record and HTML has 1 image tag
+          matched = questionImages[0];
+        }
 
+        let res: ImageResolutionResult | null = null;
         if (matched) {
-          const res = await resolveQuestionImage(matched, questionCode);
-
-          console.log({
-            questionCode,
-            embeddedImageSrc: originalSrc,
-            matchedImageId: matched.id || 'matched',
-            storageBucket: matched.storage_bucket || 'neet-source-pdfs',
-            storagePath: matched.storage_path || 'unknown',
-            isAvailable: matched.is_available !== false,
-            signedUrlCreated: Boolean(res.url),
-            duplicateDetected: true,
-            finalRenderedSrc: res.url
-          });
-
-          if (res.url) {
-            return {
-              originalTag: fullImgTag,
-              replacementTag: fullImgTag.replace(srcMatch[0], `src="${res.url}"`)
-            };
-          }
+          res = await resolveQuestionImage(matched, questionCode);
         }
 
-        // 3. Fallback: if no valid signed URL could be generated
-        if (isOption) {
-          // In options, do not render a broken 404 URL
-          return { originalTag: fullImgTag, replacementTag: '' };
-        }
-
-        // In question statement, remove unresolvable img tag to prevent broken image icon + alt text
         console.log({
           questionCode,
           embeddedImageSrc: originalSrc,
-          matchedImageId: null,
-          storageBucket: null,
-          storagePath: null,
-          isAvailable: false,
-          signedUrlCreated: false,
-          duplicateDetected: false,
-          finalRenderedSrc: null
+          matchedImageId: matched ? (matched.id || 'matched') : null,
+          storageBucket: matched?.storage_bucket || matched?.storageBucket || null,
+          storagePath: matched?.storage_path || matched?.storagePath || null,
+          isAvailable: matched ? (matched.is_available ?? matched.isAvailable ?? true) : false,
+          createSignedUrlResult: res?.rawResult || (res?.url ? { signedUrl: res.url } : res?.error || null),
+          finalRenderedSrc: res?.url || null
         });
 
-        return { originalTag: fullImgTag, replacementTag: '' };
+        if (res?.url) {
+          const cleanTag = fullImgTag
+            .replace(/\bsrc=["'][^"']+["']/i, `src="${res.url}"`)
+            .replace(/\bclass=["'][^"']*["']/i, '')
+            .replace(/>$/, ' class="max-h-72 object-contain mx-auto my-2.5 rounded-lg border border-slate-200 bg-white p-1.5 shadow-xs" />');
+          return {
+            originalTag: fullImgTag,
+            replacementTag: cleanTag
+          };
+        }
+
+        // 3. Fallback: if no valid signed URL could be generated, show explicit unavailable state (DO NOT delete)
+        if (isOption) {
+          const fallbackOptionNotice = `<span class="inline-flex items-center space-x-1 text-[11px] text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded"><span>[Diagram unavailable]</span></span>`;
+          return { originalTag: fullImgTag, replacementTag: fallbackOptionNotice };
+        }
+
+        const fallbackNotice = `
+<div class="my-2.5 p-3 rounded-lg border border-amber-200 bg-amber-50/80 text-amber-800 text-xs flex items-center space-x-2">
+  <svg class="w-4 h-4 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+  </svg>
+  <span>Diagram unavailable (${escapeHtmlAttr(getImageBasename(originalSrc) || 'diagram')})</span>
+</div>`;
+
+        return { originalTag: fullImgTag, replacementTag: fallbackNotice };
       })()
     );
   }
