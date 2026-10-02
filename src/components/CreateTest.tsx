@@ -14,6 +14,7 @@ import { CbtTestConfig, CbtTestSession, Subject } from '../types';
 import {
   AlertCircle,
   BookOpen,
+  Check,
   CheckCircle2,
   Clock,
   Compass,
@@ -22,8 +23,11 @@ import {
   Layers,
   Loader2,
   Play,
+  RotateCcw,
+  ShieldCheck,
   Sliders,
-  Sparkles
+  Sparkles,
+  X
 } from 'lucide-react';
 
 interface CreateTestProps {
@@ -37,12 +41,12 @@ export const CreateTest: React.FC<CreateTestProps> = ({
 }) => {
   // Test configuration state
   const [exam, setExam] = useState<'NEET' | 'JEE Main'>('NEET');
-  const [subject, setSubject] = useState<Subject | 'All'>('All');
+  const [selectedSubjects, setSelectedSubjects] = useState<string[]>(['Physics', 'Chemistry', 'Botany', 'Zoology']);
   const [selectedChapters, setSelectedChapters] = useState<string[]>([]);
   const [difficulty, setDifficulty] = useState<'Easy' | 'Medium' | 'Hard'>('Medium');
-  const [questionCount, setQuestionCount] = useState<number>(20);
-  const [durationMinutes, setDurationMinutes] = useState<number>(30);
-  const [mode, setMode] = useState<'chapterwise' | 'multi_chapter' | 'full_syllabus'>('full_syllabus');
+  const [questionCount, setQuestionCount] = useState<number>(180);
+  const [durationMinutes, setDurationMinutes] = useState<number>(200);
+  const [mode, setMode] = useState<'full_syllabus' | 'multi_chapter' | 'chapterwise'>('full_syllabus');
 
   // Dynamic chapters loaded from database
   const [availableChapters, setAvailableChapters] = useState<DistinctChapterItem[]>([]);
@@ -68,25 +72,38 @@ export const CreateTest: React.FC<CreateTestProps> = ({
     loadChapters();
   }, []);
 
-  // Filter chapters by current selected subject
+  const allSubjects = exam === 'NEET' ? ['Physics', 'Chemistry', 'Botany', 'Zoology'] : ['Physics', 'Chemistry', 'Mathematics'];
+
+  const toggleSubject = (subj: string) => {
+    setSelectedSubjects((prev) => {
+      if (prev.includes(subj)) {
+        if (prev.length === 1) return prev; // keep at least one
+        return prev.filter((s) => s !== subj);
+      } else {
+        return [...prev, subj];
+      }
+    });
+  };
+
+  const handleResetSubjects = () => {
+    setSelectedSubjects(allSubjects);
+  };
+
+  // Filter chapters by selected subjects
   const displayedChapters = availableChapters.filter((c) => {
-    if (subject === 'All') return true;
-    if (subject.toLowerCase() === 'biology') {
-      return (
-        c.subject.toLowerCase() === 'biology' ||
-        c.subject.toLowerCase() === 'botany' ||
-        c.subject.toLowerCase() === 'zoology' ||
-        c.chapter_slug === 'biomolecules-b'
-      );
-    }
-    if (subject.toLowerCase() === 'chemistry') {
-      return c.subject.toLowerCase() === 'chemistry' && c.chapter_slug !== 'biomolecules-b';
-    }
-    return c.subject.toLowerCase() === subject.toLowerCase();
+    if (selectedSubjects.length === allSubjects.length) return true;
+    const cSubj = c.subject.toLowerCase();
+    return selectedSubjects.some((s) => {
+      const sLower = s.toLowerCase();
+      if (sLower === 'botany' && (cSubj === 'botany' || c.chapter_slug === 'biomolecules-b')) return true;
+      if (sLower === 'zoology' && cSubj === 'zoology') return true;
+      if (sLower === 'physics' && cSubj === 'physics') return true;
+      if (sLower === 'chemistry' && cSubj === 'chemistry' && c.chapter_slug !== 'biomolecules-b') return true;
+      return cSubj === sLower;
+    });
   });
 
-  // When mode changes to full_syllabus, clear specific chapter selections
-  const handleModeChange = (newMode: 'chapterwise' | 'multi_chapter' | 'full_syllabus') => {
+  const handleModeChange = (newMode: 'full_syllabus' | 'multi_chapter' | 'chapterwise') => {
     setMode(newMode);
     if (newMode === 'full_syllabus') {
       setSelectedChapters([]);
@@ -103,7 +120,6 @@ export const CreateTest: React.FC<CreateTestProps> = ({
     }
   };
 
-  // Adjust question count and time presets
   const handleCountPreset = (count: number, minutes: number) => {
     setQuestionCount(count);
     setDurationMinutes(minutes);
@@ -117,16 +133,24 @@ export const CreateTest: React.FC<CreateTestProps> = ({
 
     // Validation for chapterwise / multi_chapter
     if (mode !== 'full_syllabus' && selectedChapters.length === 0) {
-      setError('Please select at least one chapter for this test.');
+      setError('Please select at least one chapter for this examination scope.');
       setIsGenerating(false);
       return;
     }
 
     try {
+      const primarySubject = selectedSubjects.length === allSubjects.length
+        ? 'All'
+        : selectedSubjects.length === 1
+        ? selectedSubjects[0]
+        : selectedSubjects.includes('Botany') && selectedSubjects.includes('Zoology') && selectedSubjects.length === 2
+        ? 'Biology'
+        : 'All';
+
       const config: CbtTestConfig = {
         title: `${exam} CBT Exam (${difficulty} · ${questionCount} Questions)`,
         exam,
-        subject,
+        subject: primarySubject as any,
         selectedChapters: mode === 'full_syllabus' ? [] : selectedChapters,
         difficulty,
         questionCount,
@@ -137,206 +161,268 @@ export const CreateTest: React.FC<CreateTestProps> = ({
       const session = await generateCbtTestSession(config);
       onStartExam(session);
     } catch (err: any) {
-      setError(err.message || 'Failed to assemble test session from database.');
+      setError(err.message || 'Failed to assemble test session from question bank.');
     } finally {
       setIsGenerating(false);
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-6 font-sans">
-      {/* Title */}
-      <div className="pb-4 mb-6 border-b border-slate-200">
-        <h1 className="text-xl font-bold text-slate-900 tracking-tight">Create CBT Mock Test</h1>
-        <p className="text-xs text-slate-500 font-normal mt-0.5">
-          Configure a computer-based examination with strict question difficulty segregation.
-        </p>
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12 font-sans space-y-8">
+      {/* 1. Page Header matching Reference Screenshot */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-2">
+        <div className="space-y-1.5">
+          <div className="text-[11px] font-mono font-bold tracking-widest text-slate-500 uppercase">
+            RIG CONFIGURATION / STANDARD NTA MODE
+          </div>
+          <h1 className="font-editorial-serif text-3xl sm:text-4xl font-bold tracking-tight text-slate-950">
+            Create CBT Mock Test
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 font-normal leading-relaxed">
+            Configure computer-based examination with strict question difficulty segregation and timing controls.
+          </p>
+        </div>
+
+        {/* Live Bank Pill Badge */}
+        <div className="inline-flex items-center space-x-2 bg-white border border-slate-200/80 shadow-[0_1px_2px_rgba(0,0,0,0.03)] px-3.5 py-1.5 rounded-full text-xs font-medium text-slate-700 shrink-0 self-start md:self-auto">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span>Live Bank: <strong className="font-mono text-slate-900 font-bold">15,815</strong> Verified Items</span>
+        </div>
       </div>
 
+      {/* Error Alert */}
       {error && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-xs text-red-700 flex items-start space-x-2 mb-6">
-          <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
-          <div className="flex-1">
-            <span className="font-semibold block mb-0.5">Test Assembly Error</span>
-            <span>{error}</span>
-          </div>
+        <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs flex items-center space-x-2 shadow-xs">
+          <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+          <span className="font-medium">{error}</span>
         </div>
       )}
 
       <form onSubmit={handleCreateAndStart} className="space-y-6">
-        {/* Step 1: Target Exam & Difficulty */}
-        <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-6 space-y-5">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-            01. Exam Target & Difficulty Segregation
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {/* Exam Selector */}
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-2">Target Exam</label>
-              <div className="grid grid-cols-2 gap-2">
-                {[
-                  { id: 'NEET' as const, label: 'NEET' },
-                  { id: 'JEE Main' as const, label: 'JEE Main' }
-                ].map((item) => {
-                  const isActive = exam === item.id;
-                  return (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => setExam(item.id)}
-                      className={`py-2 px-3 text-xs font-semibold rounded-lg border text-center transition-all ${
-                        isActive
-                          ? 'bg-blue-50/80 border-blue-600 text-blue-900 shadow-xs ring-1 ring-blue-600/30'
-                          : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
-                      }`}
-                    >
-                      {item.label}
-                    </button>
-                  );
-                })}
+        {/* PANEL 01: Target Exam & Difficulty Segregation */}
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.02)] p-6 sm:p-8 space-y-6 relative">
+          <div className="flex items-start justify-between">
+            <div className="space-y-1">
+              <div className="w-7 h-5 rounded-md bg-black text-white text-[11px] font-mono font-bold flex items-center justify-center mb-2">
+                01
               </div>
+              <h2 className="font-editorial-serif text-lg sm:text-xl font-bold text-slate-950 tracking-tight">
+                Target Exam & Difficulty Segregation
+              </h2>
+              <p className="text-xs text-slate-500 font-normal">
+                Calibrate standard grading rubrics, item weightage, and difficulty constraints.
+              </p>
             </div>
+            <Sliders className="w-4 h-4 text-slate-400 shrink-0 mt-1" />
+          </div>
 
-            {/* Difficulty Selector */}
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-2">
-                Difficulty Level
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+            {/* Target Examination */}
+            <div className="space-y-2">
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                Target Examination
               </label>
-              <div className="grid grid-cols-3 gap-2">
-                {(['Easy', 'Medium', 'Hard'] as const).map((lvl) => {
-                  return (
-                    <button
-                      key={lvl}
-                      type="button"
-                      onClick={() => setDifficulty(lvl)}
-                      className={`py-2 px-3 text-xs font-semibold rounded-lg border text-center transition-all ${
-                        difficulty === lvl
-                          ? lvl === 'Easy'
-                            ? 'bg-emerald-50 border-emerald-600 text-emerald-900 ring-1 ring-emerald-500/30'
-                            : lvl === 'Medium'
-                            ? 'bg-amber-50 border-amber-600 text-amber-900 ring-1 ring-amber-500/30'
-                            : 'bg-red-50 border-red-600 text-red-900 ring-1 ring-red-500/30'
-                          : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
-                      }`}
-                    >
-                      {lvl}
-                    </button>
-                  );
-                })}
+              <div className="bg-slate-100 p-1 rounded-xl flex items-center space-x-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setExam('NEET');
+                    setSelectedSubjects(['Physics', 'Chemistry', 'Botany', 'Zoology']);
+                  }}
+                  className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all ${
+                    exam === 'NEET'
+                      ? 'bg-black text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  NEET UG
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setExam('JEE Main');
+                    setSelectedSubjects(['Physics', 'Chemistry', 'Mathematics']);
+                  }}
+                  className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all ${
+                    exam === 'JEE Main'
+                      ? 'bg-black text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  JEE Main
+                </button>
               </div>
             </div>
-          </div>
 
-          {/* Difficulty Rules Explainer Banner */}
-          <div className="p-3 bg-slate-50 rounded-lg border border-slate-200 text-[11px] text-slate-600 leading-relaxed flex items-start space-x-2">
-            <Sparkles className="w-3.5 h-3.5 text-blue-600 shrink-0 mt-0.5" />
-            <div>
-              {exam === 'NEET' && difficulty === 'Easy' && (
-                <span>
-                  <strong>NEET Easy Rule:</strong> Tests strictly drawn from NEET questions classified as Easy. No JEE Main questions will be included.
-                </span>
-              )}
-              {exam === 'NEET' && difficulty === 'Medium' && (
-                <span>
-                  <strong>NEET Medium Rule:</strong> Tests strictly drawn from NEET questions classified as Medium. JEE Main questions are kept segregated.
-                </span>
-              )}
-              {exam === 'NEET' && difficulty === 'Hard' && (
-                <span>
-                  <strong>NEET Hard Rule:</strong> Tests drawn from NEET Hard questions <em>plus</em> JEE Main Physics and Chemistry questions to provide the deepest conceptual challenge.
-                </span>
-              )}
-              {exam === 'JEE Main' && (
-                <span>
-                  <strong>JEE Main Standard:</strong> Tests drawn exclusively from canonical JEE Main questions for the selected subject and difficulty.
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Step 2: Subject & Syllabus Scope */}
-        <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-6 space-y-5">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-            02. Subject & Chapter Scope
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {/* Subject Selector */}
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-2">Subject</label>
-              <select
-                value={subject}
-                onChange={(e) => {
-                  setSubject(e.target.value as any);
-                  setSelectedChapters([]);
-                }}
-                className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-800 focus:outline-hidden focus:bg-white"
-              >
-                <option value="All">All Subjects (Four-Subject Standard)</option>
-                <option value="Physics">Physics</option>
-                <option value="Chemistry">Chemistry</option>
-                <option value="Botany">Botany</option>
-                <option value="Zoology">Zoology</option>
-              </select>
-            </div>
-
-            {/* Test Mode Selector */}
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-2">Syllabus Mode</label>
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  { id: 'full_syllabus', label: 'Full Syllabus' },
-                  { id: 'multi_chapter', label: 'Multi Chapter' },
-                  { id: 'chapterwise', label: 'Chapterwise' }
-                ].map((m) => (
+            {/* Difficulty Calibration Tier */}
+            <div className="space-y-2">
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                Difficulty Calibration Tier
+              </label>
+              <div className="bg-slate-100 p-1 rounded-xl flex items-center space-x-1">
+                {(['Easy', 'Medium', 'Hard'] as const).map((lvl) => (
                   <button
-                    key={m.id}
+                    key={lvl}
                     type="button"
-                    onClick={() => handleModeChange(m.id as any)}
-                    className={`py-2 px-2 text-xs font-semibold rounded-lg border text-center transition-all ${
-                      mode === m.id
-                        ? 'bg-blue-50 border-blue-600 text-blue-900'
-                        : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
+                    onClick={() => setDifficulty(lvl)}
+                    className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all ${
+                      difficulty === lvl
+                        ? 'bg-black text-white shadow-xs'
+                        : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
-                    {m.label}
+                    {lvl}
                   </button>
                 ))}
               </div>
             </div>
           </div>
 
-          {/* Dynamic Chapter Multi-select List (if not full syllabus) */}
-          {mode !== 'full_syllabus' && (
-            <div className="space-y-2 pt-2 border-t border-slate-100">
-              <div className="flex items-center justify-between text-xs">
-                <label className="font-semibold text-slate-700">
-                  Select {mode === 'chapterwise' ? 'Single Chapter' : 'Chapters'} ({selectedChapters.length} chosen)
+          {/* Strict Segregation Rule Info Card */}
+          <div className="bg-slate-50/80 border border-slate-200/70 rounded-xl p-4 flex items-start space-x-3 text-xs text-slate-600">
+            <ShieldCheck className="w-4 h-4 text-slate-700 shrink-0 mt-0.5" />
+            <div className="space-y-0.5">
+              <span className="font-bold text-slate-900 block">Strict Segregation Rule Active</span>
+              <p className="text-[11px] leading-relaxed text-slate-500 font-normal">
+                {exam === 'NEET' && difficulty === 'Hard'
+                  ? 'High-Yield Hard mode includes rigorous NEET Hard items combined with authentic JEE Main Physics & Chemistry PYQs for deep revision.'
+                  : exam === 'NEET'
+                  ? 'When calibrating for NEET UG at Medium/Easy tier, the algorithmic engine isolates questions strictly from authenticated NEET archives. Cross-stream JEE items are strictly segregated.'
+                  : 'JEE Main mode isolates questions exclusively from verified JEE archives.'}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* PANEL 02: Subject & Syllabus Scope */}
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.02)] p-6 sm:p-8 space-y-6 relative">
+          <div className="flex items-start justify-between">
+            <div className="space-y-1">
+              <div className="w-7 h-5 rounded-md bg-black text-white text-[11px] font-mono font-bold flex items-center justify-center mb-2">
+                02
+              </div>
+              <h2 className="font-editorial-serif text-lg sm:text-xl font-bold text-slate-950 tracking-tight">
+                Subject & Syllabus Scope
+              </h2>
+              <p className="text-xs text-slate-500 font-normal">
+                Select target domain disciplines and chapter-level curriculum boundary.
+              </p>
+            </div>
+            <BookOpen className="w-4 h-4 text-slate-400 shrink-0 mt-1" />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+            {/* Domain Subjects Pills */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                  Domain Subjects
                 </label>
-                {selectedChapters.length > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => setSelectedChapters([])}
-                    className="text-slate-400 hover:text-slate-600"
-                  >
-                    Clear selection
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={handleResetSubjects}
+                  className="text-[11px] font-semibold text-slate-600 hover:text-black underline transition"
+                >
+                  Reset All
+                </button>
+              </div>
+
+              <div className="flex flex-wrap gap-2 p-1.5 bg-slate-100 rounded-xl">
+                {allSubjects.map((subj) => {
+                  const isSelected = selectedSubjects.includes(subj);
+                  return (
+                    <button
+                      key={subj}
+                      type="button"
+                      onClick={() => toggleSubject(subj)}
+                      className={`inline-flex items-center space-x-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border ${
+                        isSelected
+                          ? 'bg-white text-slate-950 border-slate-200 shadow-2xs'
+                          : 'bg-transparent text-slate-400 border-transparent hover:text-slate-700'
+                      }`}
+                    >
+                      <span>{subj}</span>
+                      {isSelected ? (
+                        <X className="w-3 h-3 text-slate-400 hover:text-slate-800" />
+                      ) : (
+                        <span className="text-slate-400 font-mono text-[10px]">+</span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+              <span className="text-[11px] text-slate-400 block font-normal">
+                Item distribution evenly weighted across {selectedSubjects.length} active domain{selectedSubjects.length > 1 ? 's' : ''}.
+              </span>
+            </div>
+
+            {/* Syllabus Coverage */}
+            <div className="space-y-2">
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                Syllabus Coverage
+              </label>
+              <div className="bg-slate-100 p-1 rounded-xl flex items-center space-x-1">
+                <button
+                  type="button"
+                  onClick={() => handleModeChange('full_syllabus')}
+                  className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all ${
+                    mode === 'full_syllabus'
+                      ? 'bg-black text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  Full Syllabus
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleModeChange('multi_chapter')}
+                  className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all ${
+                    mode === 'multi_chapter'
+                      ? 'bg-black text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  Multi-Chapter
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleModeChange('chapterwise')}
+                  className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all ${
+                    mode === 'chapterwise'
+                      ? 'bg-black text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  Chapterwise
+                </button>
+              </div>
+
+              <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1">
+                <span>Entire 11th & 12th Unified Curriculum ({availableChapters.length} Chapters)</span>
+                <span className="font-mono font-medium text-slate-700">Class XI + XII</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Chapter Selection Grid if Multi-Chapter or Chapterwise */}
+          {mode !== 'full_syllabus' && (
+            <div className="space-y-3 pt-4 border-t border-slate-100">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-800">
+                  Select Curriculum Chapters ({selectedChapters.length} selected):
+                </span>
+                <span className="text-[11px] text-slate-400">
+                  {displayedChapters.length} chapters available in active subjects
+                </span>
               </div>
 
               {loadingChapters ? (
-                <div className="py-6 text-center text-slate-400 text-xs">
-                  <Loader2 className="w-4 h-4 animate-spin mx-auto mb-1 text-slate-500" />
-                  Loading chapters from database...
-                </div>
-              ) : displayedChapters.length === 0 ? (
-                <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-500 text-center">
-                  No chapters registered in question bank yet.
+                <div className="p-8 text-center text-slate-400 text-xs flex items-center justify-center space-x-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Loading chapter catalog...</span>
                 </div>
               ) : (
-                <div className="max-h-48 overflow-y-auto border border-slate-200 rounded-lg p-2 grid grid-cols-1 sm:grid-cols-2 gap-1.5 bg-slate-50">
+                <div className="max-h-64 overflow-y-auto p-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 border border-slate-200 rounded-xl bg-slate-50/50 p-3">
                   {displayedChapters.map((c) => {
                     const isSelected = selectedChapters.includes(c.chapter_slug);
                     return (
@@ -344,16 +430,23 @@ export const CreateTest: React.FC<CreateTestProps> = ({
                         key={`${c.subject}-${c.chapter_slug}`}
                         type="button"
                         onClick={() => toggleChapterSelection(c.chapter_slug)}
-                        className={`p-2 rounded text-left text-xs transition-colors flex items-center justify-between ${
+                        className={`text-left p-2.5 rounded-lg text-xs font-medium transition border flex items-center justify-between ${
                           isSelected
-                            ? 'bg-blue-600 text-white font-semibold'
-                            : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
+                            ? 'bg-black text-white border-black shadow-xs font-bold'
+                            : 'bg-white hover:bg-slate-100 border-slate-200 text-slate-700'
                         }`}
                       >
-                        <span className="truncate pr-2">{c.display_name || c.chapter_name}</span>
-                        <span className={`text-[10px] tabular-nums ${isSelected ? 'text-blue-100' : 'text-slate-400'}`}>
-                          {c.count} Qs
-                        </span>
+                        <div className="truncate pr-2">
+                          <span className="block truncate">{c.display_name || c.chapter_name}</span>
+                          <span
+                            className={`text-[10px] block ${
+                              isSelected ? 'text-slate-300' : 'text-slate-400'
+                            }`}
+                          >
+                            {c.subject} · {c.count} items
+                          </span>
+                        </div>
+                        {isSelected && <Check className="w-3.5 h-3.5 shrink-0 text-white" />}
                       </button>
                     );
                   })}
@@ -363,98 +456,119 @@ export const CreateTest: React.FC<CreateTestProps> = ({
           )}
         </div>
 
-        {/* Step 3: Question Volume & Duration */}
-        <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-6 space-y-5">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-            03. Exam Volume & Duration Presets
-          </h2>
+        {/* PANEL 03: Exam Parameters & Timing */}
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.02)] p-6 sm:p-8 space-y-6 relative">
+          <div className="flex items-start justify-between">
+            <div className="space-y-1">
+              <div className="w-7 h-5 rounded-md bg-black text-white text-[11px] font-mono font-bold flex items-center justify-center mb-2">
+                03
+              </div>
+              <h2 className="font-editorial-serif text-lg sm:text-xl font-bold text-slate-950 tracking-tight">
+                Exam Parameters & Timing
+              </h2>
+              <p className="text-xs text-slate-500 font-normal">
+                Tune session duration, question quota, and pacing index.
+              </p>
+            </div>
+            <Clock className="w-4 h-4 text-slate-400 shrink-0 mt-1" />
+          </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-2">
-                Number of Questions
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+            {/* Number of Questions */}
+            <div className="space-y-2">
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                Question Volume Quota
               </label>
-              <div className="grid grid-cols-4 gap-2 mb-2">
-                {[10, 20, 45, 90].map((count) => (
+              <div className="bg-slate-100 p-1 rounded-xl flex items-center space-x-1 mb-2">
+                {[20, 45, 90, 180].map((count) => (
                   <button
                     key={count}
                     type="button"
-                    onClick={() => handleCountPreset(count, Math.round(count * 1.5))}
-                    className={`py-1.5 text-xs font-semibold rounded border transition ${
+                    onClick={() => handleCountPreset(count, count === 180 ? 200 : Math.round(count * 1.5))}
+                    className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all ${
                       questionCount === count
-                        ? 'bg-slate-900 text-white border-slate-900'
-                        : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                        ? 'bg-black text-white shadow-xs'
+                        : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
                     {count} Qs
                   </button>
                 ))}
               </div>
-              <input
-                type="number"
-                min={1}
-                max={200}
-                value={questionCount}
-                onChange={(e) => setQuestionCount(Math.max(1, parseInt(e.target.value) || 1))}
-                className="w-full p-2 bg-slate-50 border border-slate-200 rounded text-xs font-medium text-slate-800 focus:outline-hidden"
-              />
+              <div className="flex items-center space-x-2">
+                <span className="text-xs text-slate-500">Custom:</span>
+                <input
+                  type="number"
+                  min={1}
+                  max={180}
+                  value={questionCount}
+                  onChange={(e) => setQuestionCount(Math.max(1, parseInt(e.target.value) || 1))}
+                  className="w-24 p-1.5 px-3 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-900 focus:outline-hidden font-mono"
+                />
+                <span className="text-xs text-slate-400">Questions</span>
+              </div>
             </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-2">
-                Duration (Minutes)
+            {/* Duration (Minutes) */}
+            <div className="space-y-2">
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                Duration & Pacing Limit
               </label>
-              <div className="grid grid-cols-4 gap-2 mb-2">
-                {[15, 30, 60, 180].map((mins) => (
+              <div className="bg-slate-100 p-1 rounded-xl flex items-center space-x-1 mb-2">
+                {[30, 45, 90, 200].map((mins) => (
                   <button
                     key={mins}
                     type="button"
                     onClick={() => setDurationMinutes(mins)}
-                    className={`py-1.5 text-xs font-semibold rounded border transition ${
+                    className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all ${
                       durationMinutes === mins
-                        ? 'bg-slate-900 text-white border-slate-900'
-                        : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                        ? 'bg-black text-white shadow-xs'
+                        : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
                     {mins}m
                   </button>
                 ))}
               </div>
-              <input
-                type="number"
-                min={5}
-                max={360}
-                value={durationMinutes}
-                onChange={(e) => setDurationMinutes(Math.max(1, parseInt(e.target.value) || 1))}
-                className="w-full p-2 bg-slate-50 border border-slate-200 rounded text-xs font-medium text-slate-800 focus:outline-hidden"
-              />
+              <div className="flex items-center space-x-2">
+                <span className="text-xs text-slate-500">Custom:</span>
+                <input
+                  type="number"
+                  min={5}
+                  max={360}
+                  value={durationMinutes}
+                  onChange={(e) => setDurationMinutes(Math.max(1, parseInt(e.target.value) || 1))}
+                  className="w-24 p-1.5 px-3 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-900 focus:outline-hidden font-mono"
+                />
+                <span className="text-xs text-slate-400">Minutes</span>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Submit & Start Action Button */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+        {/* Action Controls */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4">
           <button
             type="button"
             onClick={onNavigateToLibrary}
-            className="text-xs font-medium text-slate-600 hover:text-slate-900 underline order-2 sm:order-1"
+            className="text-xs font-semibold text-slate-500 hover:text-slate-950 underline transition order-2 sm:order-1"
           >
-            Review questions in library first
+            Review question archives in Question Bank →
           </button>
 
           <button
             type="submit"
             disabled={isGenerating}
-            className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs font-bold rounded-lg shadow-sm transition order-1 sm:order-2"
+            className="w-full sm:w-auto inline-flex items-center justify-center space-x-2.5 px-8 py-3.5 bg-black hover:bg-slate-900 disabled:opacity-50 text-white text-xs font-bold rounded-xl shadow-sm transition order-1 sm:order-2"
           >
             {isGenerating ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Assembling CBT Exam...</span>
+                <span>Assembling CBT Exam Rig...</span>
               </>
             ) : (
               <>
-                <Play className="w-4 h-4 fill-white" />
+                <Play className="w-3.5 h-3.5 fill-white" />
                 <span>Launch Computer-Based Test (CBT)</span>
               </>
             )}

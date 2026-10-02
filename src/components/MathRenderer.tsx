@@ -15,6 +15,7 @@ import { QuestionBankImageItem } from '../types';
 export interface MathRendererProps {
   text?: string | null;
   html?: string | null;
+  content?: string | null;
   className?: string;
   as?: 'div' | 'span' | 'p';
   images?: QuestionBankImageItem[] | null;
@@ -264,21 +265,25 @@ function unescapeHtml(str: string): string {
 export const MathRenderer: React.FC<MathRendererProps> = ({
   text,
   html,
+  content: propContent,
   className = '',
   as = 'div',
   images,
   questionCode = 'UNKNOWN',
   isOption = false
 }) => {
-  const hasEmbeddedImg = Boolean(html && /<img\b[^>]*>/i.test(html));
+  const effectiveHtml = html || (propContent && (propContent.includes('<') || propContent.includes('&')) ? propContent : null);
+  const effectiveText = text || propContent || null;
+
+  const hasEmbeddedImg = Boolean(effectiveHtml && /<img\b[^>]*>/i.test(effectiveHtml));
   const [resolvedHtml, setResolvedHtml] = useState<string | null>(null);
   const currentKeyRef = useRef<string>('');
 
   useEffect(() => {
-    const activeKey = `${questionCode}::${html || ''}`;
+    const activeKey = `${questionCode}::${effectiveHtml || ''}`;
     currentKeyRef.current = activeKey;
 
-    if (!html || !html.trim()) {
+    if (!effectiveHtml || !effectiveHtml.trim()) {
       setResolvedHtml(null);
       return;
     }
@@ -289,7 +294,7 @@ export const MathRenderer: React.FC<MathRendererProps> = ({
     }
 
     let isCurrent = true;
-    transformEmbeddedHtmlImages(html, images, questionCode, isOption)
+    transformEmbeddedHtmlImages(effectiveHtml, images, questionCode, isOption)
       .then((transformed) => {
         if (isCurrent && currentKeyRef.current === activeKey) {
           setResolvedHtml(transformed);
@@ -298,39 +303,39 @@ export const MathRenderer: React.FC<MathRendererProps> = ({
       .catch((err) => {
         console.warn('[MathRenderer] Image transform error:', err);
         if (isCurrent && currentKeyRef.current === activeKey) {
-          setResolvedHtml(html);
+          setResolvedHtml(effectiveHtml);
         }
       });
 
     return () => {
       isCurrent = false;
     };
-  }, [html, images, questionCode, isOption, hasEmbeddedImg]);
+  }, [effectiveHtml, images, questionCode, isOption, hasEmbeddedImg]);
 
-  const content = useMemo(() => {
+  const outputContent = useMemo(() => {
     // 1. Primary path: HTML provided
-    if (html && html.trim()) {
+    if (effectiveHtml && effectiveHtml.trim()) {
       // If we have an embedded image and resolution is ready, use resolvedHtml
-      const htmlToRender = resolvedHtml !== null ? resolvedHtml : html;
+      const htmlToRender = resolvedHtml !== null ? resolvedHtml : effectiveHtml;
       return isOption
         ? renderTrustedOptionHtml(htmlToRender)
         : renderTrustedQuestionHtml(htmlToRender);
     }
 
     // 2. Pure text fallback path: when html does NOT exist
-    if (text && text.trim()) {
-      return renderMathText(text);
+    if (effectiveText && effectiveText.trim()) {
+      return renderMathText(effectiveText);
     }
 
     return '';
-  }, [html, resolvedHtml, text, isOption]);
+  }, [effectiveHtml, resolvedHtml, effectiveText, isOption]);
 
   const Component = as;
 
   return (
     <Component
       className={`math-content font-sans leading-relaxed ${className}`}
-      dangerouslySetInnerHTML={{ __html: content }}
+      dangerouslySetInnerHTML={{ __html: outputContent }}
     />
   );
 };

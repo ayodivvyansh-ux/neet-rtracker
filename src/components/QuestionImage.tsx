@@ -20,7 +20,7 @@ export const QuestionImage: React.FC<QuestionImageProps> = ({
   image,
   alt = 'Question diagram',
   className = '',
-  maxHeight = 'max-h-80',
+  maxHeight = 'max-h-[520px]',
   questionCode
 }) => {
   const [resolvedUrl, setResolvedUrl] = useState<string | null>(null);
@@ -109,7 +109,8 @@ export const QuestionImage: React.FC<QuestionImageProps> = ({
                 alt={caption || alt}
                 onError={() => setError(true)}
                 referrerPolicy="no-referrer"
-                className={`w-auto ${maxHeight} object-contain mx-auto block cursor-pointer transition-transform hover:scale-[1.01]`}
+                style={{ width: 'min(100%, 680px)', height: 'auto', maxHeight: '520px', objectFit: 'contain' }}
+                className={`w-auto ${maxHeight} object-contain mx-auto block cursor-pointer transition-transform hover:scale-[1.005]`}
                 onClick={() => setModalOpen(true)}
               />
               <button

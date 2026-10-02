@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   CbtActiveQuestion,
   CbtTestSession,
@@ -12,6 +12,9 @@ import {
 import { MathRenderer } from './MathRenderer';
 import { QuestionImage } from './QuestionImage';
 import { getStandaloneQuestionImages } from '../services/imageService';
+import { SubjectTabs } from './cbt/SubjectTabs';
+import { SubjectQuestionNavigator } from './cbt/SubjectQuestionNavigator';
+import { QuestionStatusLegend } from './cbt/QuestionStatusLegend';
 import {
   AlertTriangle,
   ArrowLeft,
@@ -22,6 +25,7 @@ import {
   Eye,
   Flag,
   HelpCircle,
+  Hexagon,
   Maximize2,
   Minimize2,
   RotateCcw,
@@ -48,6 +52,10 @@ export const CBTExamInterface: React.FC<CBTExamInterfaceProps> = ({
   const questions = testSession.questions;
   const [currentIndex, setCurrentIndex] = useState<number>(0);
 
+  // Section Tracking
+  const [activeTopSection, setActiveTopSection] = useState<string>('PHYSICS');
+  const [activeBiologySubSection, setActiveBiologySubSection] = useState<string | null>('BOTANY');
+
   // User responses { [questionId]: 'A' | 'B' | 'C' | 'D' | null }
   const [responses, setResponses] = useState<Record<string, string | null>>(testSession.userResponses || {});
 
@@ -69,7 +77,27 @@ export const CBTExamInterface: React.FC<CBTExamInterfaceProps> = ({
 
   const activeQuestion = questions[currentIndex] || questions[0];
 
-  // 1. Timer countdown & auto-submit
+  // 1. Synchronize active section tab with active question subject
+  useEffect(() => {
+    if (!activeQuestion) return;
+    const subj = (activeQuestion.subject || 'General').toUpperCase();
+    if (subj === 'PHYSICS') {
+      setActiveTopSection('PHYSICS');
+    } else if (subj === 'CHEMISTRY') {
+      setActiveTopSection('CHEMISTRY');
+    } else if (subj === 'BOTANY' || subj === 'ZOOLOGY' || subj === 'BIOLOGY') {
+      setActiveTopSection('BIOLOGY');
+      if (subj === 'BOTANY') {
+        setActiveBiologySubSection('BOTANY');
+      } else if (subj === 'ZOOLOGY') {
+        setActiveBiologySubSection('ZOOLOGY');
+      }
+    } else {
+      setActiveTopSection(subj);
+    }
+  }, [currentIndex, activeQuestion?.id]);
+
+  // 2. Timer countdown & auto-submit
   useEffect(() => {
     const interval = setInterval(() => {
       setRemainingSeconds((prev) => {
@@ -93,7 +121,7 @@ export const CBTExamInterface: React.FC<CBTExamInterfaceProps> = ({
     return () => clearInterval(interval);
   }, [activeQuestion?.id]);
 
-  // 2. Mark visited when index changes
+  // 3. Mark visited when index changes
   useEffect(() => {
     if (!activeQuestion) return;
     setStatuses((prev) => {
@@ -108,10 +136,9 @@ export const CBTExamInterface: React.FC<CBTExamInterfaceProps> = ({
     });
   }, [currentIndex, activeQuestion?.id]);
 
-  // 3. Stable Keyboard Navigation
+  // 4. Stable Keyboard Navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't trigger if inside input or modal
       if (isSubmitModalOpen || e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
         return;
       }
@@ -137,6 +164,46 @@ export const CBTExamInterface: React.FC<CBTExamInterfaceProps> = ({
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [currentIndex, responses, activeQuestion?.id, isSubmitModalOpen]);
+
+  // Handlers for subject section selection
+  const handleSelectSection = (sectionId: string, targetIndex?: number) => {
+    setActiveTopSection(sectionId);
+    if (sectionId === 'BIOLOGY') {
+      const bioIndex = questions.findIndex(
+        (q) =>
+          q.subject.toLowerCase() === 'botany' ||
+          q.subject.toLowerCase() === 'zoology' ||
+          q.subject.toLowerCase() === 'biology'
+      );
+      if (bioIndex >= 0) {
+        setCurrentIndex(bioIndex);
+        const sub = questions[bioIndex].subject.toUpperCase();
+        if (sub === 'BOTANY' || sub === 'ZOOLOGY') {
+          setActiveBiologySubSection(sub);
+        }
+      }
+    } else if (typeof targetIndex === 'number' && targetIndex >= 0) {
+      setCurrentIndex(targetIndex);
+    } else {
+      const secIndex = questions.findIndex(
+        (q) => q.subject.toUpperCase() === sectionId.toUpperCase()
+      );
+      if (secIndex >= 0) setCurrentIndex(secIndex);
+    }
+  };
+
+  const handleSelectBiologySubsection = (subId: string, targetIndex?: number) => {
+    setActiveTopSection('BIOLOGY');
+    setActiveBiologySubSection(subId);
+    if (typeof targetIndex === 'number' && targetIndex >= 0) {
+      setCurrentIndex(targetIndex);
+    } else {
+      const subIndex = questions.findIndex(
+        (q) => q.subject.toUpperCase() === subId.toUpperCase()
+      );
+      if (subIndex >= 0) setCurrentIndex(subIndex);
+    }
+  };
 
   // Option selection
   const handleOptionSelect = (optionKey: string) => {
@@ -228,7 +295,6 @@ export const CBTExamInterface: React.FC<CBTExamInterfaceProps> = ({
 
   const handleSaveAndNext = () => {
     if (!activeQuestion) return;
-    // ensure status is Answered or Not Answered
     const hasAnswer = Boolean(responses[activeQuestion.id]);
     setStatuses((prev) => ({
       ...prev,
@@ -312,83 +378,96 @@ export const CBTExamInterface: React.FC<CBTExamInterfaceProps> = ({
     ? [activeQuestion.images]
     : [];
 
-  // Duplicate Visual Prevention: Only render standalone card if the image is NOT already embedded in question_html!
   const standaloneImages = getStandaloneQuestionImages(
     allImages,
-    activeQuestion?.question_html
+    activeQuestion?.question_html,
+    activeQuestion?.options
+      ? Object.entries(activeQuestion.options).map(([k, v]) => ({
+          option_html: activeQuestion.optionsHtml?.[k] || v
+        }))
+      : []
   );
 
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col font-sans select-none">
+    <div className="min-h-screen bg-[#fbfbfa] flex flex-col font-sans select-none">
       {/* 1. Official CBT Header */}
-      <header className="bg-slate-900 text-white border-b border-slate-800 px-4 py-2.5 flex items-center justify-between z-30 shrink-0">
-        <div className="flex items-center space-x-3">
-          <div className="bg-blue-600 text-white text-xs font-black px-2.5 py-1 rounded">
-            CBT
+      <header className="bg-white border-b border-slate-200/80 px-4 sm:px-6 py-3 flex items-center justify-between z-30 shrink-0">
+        <div className="flex items-center space-x-3 sm:space-x-4">
+          <div className="w-7 h-7 rounded-lg bg-black text-white flex items-center justify-center font-black text-xs shadow-xs">
+            <Hexagon className="w-4 h-4 fill-white text-black" />
           </div>
           <div>
-            <h1 className="text-sm font-bold text-slate-100 tracking-tight leading-tight">
+            <h1 className="font-editorial-serif text-base sm:text-lg font-bold text-slate-950 tracking-tight leading-tight">
               {testSession.title}
             </h1>
-            <div className="flex items-center gap-2 text-[11px] text-slate-400">
-              <span className="font-mono text-blue-400 font-semibold">{activeQuestion?.question_code}</span>
-              <span aria-hidden="true">·</span>
+            <div className="flex items-center gap-2 text-[11px] text-slate-500 font-medium">
+              <span className="font-mono text-slate-900 font-semibold">{activeQuestion?.question_code}</span>
+              <span>·</span>
               <span>{activeQuestion?.subject}</span>
-              <span aria-hidden="true">·</span>
-              <span className="truncate max-w-[200px]">{activeQuestion?.chapter_name}</span>
+              <span>·</span>
+              <span className="truncate max-w-[220px]">{activeQuestion?.chapter_name}</span>
             </div>
           </div>
         </div>
 
-        {/* Right Header Area: Timer, Candidate, Controls */}
-        <div className="flex items-center space-x-4">
+        {/* Right Header Controls */}
+        <div className="flex items-center space-x-3 sm:space-x-4">
           {/* Live Exam Timer */}
           <div
-            className={`flex items-center space-x-1.5 px-3 py-1 rounded-md border font-mono font-bold text-xs tracking-wider ${
+            className={`flex items-center space-x-1.5 px-3.5 py-1.5 rounded-lg border font-mono font-bold text-xs tracking-wider ${
               isTimeCritical
-                ? 'bg-red-950 text-red-400 border-red-800 animate-pulse'
-                : 'bg-slate-800 text-emerald-400 border-slate-700'
+                ? 'bg-red-50 text-red-700 border-red-300 animate-pulse'
+                : 'bg-slate-100 text-slate-900 border-slate-200'
             }`}
           >
-            <Clock className="w-3.5 h-3.5" />
+            <Clock className="w-3.5 h-3.5 text-slate-600" />
             <span>Time Left: {timeFormatted}</span>
           </div>
 
-          {/* Fullscreen Button */}
           <button
             type="button"
             onClick={toggleFullscreen}
-            className="hidden sm:flex p-1.5 rounded text-slate-400 hover:text-white hover:bg-slate-800 transition"
+            className="hidden sm:flex p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition"
             title="Toggle Fullscreen"
           >
             {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
           </button>
 
-          {/* Candidate Profile Widget */}
-          <div className="hidden md:flex items-center space-x-2 pl-2 border-l border-slate-700">
-            <div className="w-7 h-7 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300">
-              <User className="w-4 h-4" />
+          <div className="hidden md:flex items-center space-x-2 pl-3 border-l border-slate-200">
+            <div className="w-7 h-7 rounded-full bg-slate-900 text-white flex items-center justify-center text-xs font-bold shadow-xs">
+              <User className="w-3.5 h-3.5" />
             </div>
             <div className="text-[11px] leading-tight text-right">
-              <span className="block font-semibold text-slate-200">Candidate</span>
-              <span className="text-slate-400 text-[10px]">Roll: 2026-NEET</span>
+              <span className="block font-bold text-slate-900">Candidate</span>
+              <span className="text-slate-400 text-[10px] font-mono">Roll: NEET-UG</span>
             </div>
           </div>
         </div>
       </header>
 
-      {/* 2. Main Stage & Question Workspace */}
+      {/* 2. Top-Level Subject Navigation Tabs */}
+      <SubjectTabs
+        questions={questions}
+        currentIndex={currentIndex}
+        responses={responses}
+        activeTopSection={activeTopSection}
+        activeBiologySubSection={activeBiologySubSection}
+        onSelectSection={handleSelectSection}
+        onSelectBiologySubsection={handleSelectBiologySubsection}
+      />
+
+      {/* 3. Main Stage & Question Workspace */}
       <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
         {/* LEFT: Question Stage (75% on Desktop) */}
-        <main className="flex-1 flex flex-col bg-white overflow-y-auto">
-          {/* Sub-bar: Subject & Question Navigation index */}
-          <div className="bg-slate-50 border-b border-slate-200 px-6 py-2.5 flex items-center justify-between shrink-0">
+        <main className="flex-1 flex flex-col bg-white overflow-y-auto border-r border-slate-200/80">
+          {/* Sub-bar: Question metadata and score marking */}
+          <div className="bg-slate-50/70 border-b border-slate-200/80 px-6 py-2.5 flex items-center justify-between shrink-0">
             <div className="flex items-center space-x-2">
-              <span className="text-xs font-bold text-slate-800">
+              <span className="text-xs font-bold text-slate-900 font-editorial-serif text-sm">
                 Question {currentIndex + 1} of {questions.length}
               </span>
-              <span className="text-xs text-slate-400">|</span>
-              <span className="text-xs font-medium text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200 font-mono">
+              <span className="text-slate-300">|</span>
+              <span className="text-xs font-semibold text-slate-700 bg-white px-2 py-0.5 rounded border border-slate-200 font-mono text-[11px]">
                 {activeQuestion?.question_code}
               </span>
               <span className="text-xs text-slate-500 font-medium">
@@ -397,35 +476,34 @@ export const CBTExamInterface: React.FC<CBTExamInterfaceProps> = ({
             </div>
 
             <div className="flex items-center space-x-2 text-xs">
-              <span className="text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                +4.00
+              <span className="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 text-[11px] font-mono">
+                +4.00 Marks
               </span>
-              <span className="text-red-700 font-semibold bg-red-50 px-2 py-0.5 rounded border border-red-200">
-                -1.00
+              <span className="text-red-700 font-bold bg-red-50 px-2 py-0.5 rounded border border-red-200 text-[11px] font-mono">
+                -1.00 Marks
               </span>
               <button
                 type="button"
                 onClick={() => setIsPaletteOpenMobile(!isPaletteOpenMobile)}
-                className="lg:hidden p-1 px-2.5 bg-slate-200 text-slate-800 rounded font-semibold text-xs"
+                className="lg:hidden p-1 px-2.5 bg-black text-white rounded-md font-semibold text-xs"
               >
-                Palette
+                Navigator
               </button>
             </div>
           </div>
 
           {/* Question Text & Diagram Container */}
-          <div className="flex-1 p-6 max-w-4xl w-full mx-auto space-y-6">
-            {/* Question Text rendered with KaTeX & embedded image transformation */}
-            <div className="text-base text-slate-900 leading-relaxed font-normal">
+          <div className="flex-1 p-6 sm:p-8 max-w-4xl w-full mx-auto space-y-6">
+            <div className="text-base text-slate-950 leading-relaxed font-normal">
               <MathRenderer
-                text={activeQuestion?.question_text}
-                html={activeQuestion?.question_html}
+                content={activeQuestion?.question_html || activeQuestion?.question_text}
                 images={activeQuestion?.images}
                 questionCode={activeQuestion?.question_code}
+                className="prose prose-slate max-w-none text-slate-950"
               />
             </div>
 
-            {/* Standalone Question Diagram / Visual Assets (only if NOT already embedded in question statement) */}
+            {/* Standalone Question Diagram / Visual Assets */}
             {standaloneImages.length > 0 && (
               <div className="space-y-3 py-1">
                 {standaloneImages.map((img, idx) => (
@@ -433,7 +511,6 @@ export const CBTExamInterface: React.FC<CBTExamInterfaceProps> = ({
                     key={idx}
                     image={img}
                     questionCode={activeQuestion?.question_code}
-                    alt={`Diagram for ${activeQuestion?.question_code}`}
                   />
                 ))}
               </div>
@@ -444,14 +521,13 @@ export const CBTExamInterface: React.FC<CBTExamInterfaceProps> = ({
               <div className="space-y-4 pt-2">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                    Numerical / Integer Answer Entry:
+                    Numerical / Decimal Answer Entry:
                   </span>
-                  <span className="text-[11px] font-semibold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded">
+                  <span className="text-[11px] font-semibold text-slate-700 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded">
                     Type or use Keypad
                   </span>
                 </div>
 
-                {/* Display / Input Area */}
                 <div className="max-w-md space-y-3">
                   <div className="flex items-center space-x-2">
                     <input
@@ -460,7 +536,7 @@ export const CBTExamInterface: React.FC<CBTExamInterfaceProps> = ({
                       value={currentSelection || ''}
                       onChange={(e) => handleNumericalInput(e.target.value)}
                       placeholder="Enter integer / decimal answer..."
-                      className="flex-1 px-4 py-3 text-lg font-mono font-semibold border-2 border-slate-300 focus:border-blue-600 focus:outline-none rounded-xl bg-white shadow-xs"
+                      className="flex-1 px-4 py-3 text-lg font-mono font-semibold border-2 border-slate-300 focus:border-black focus:outline-hidden rounded-xl bg-white shadow-xs"
                     />
                     {currentSelection && (
                       <button
@@ -474,7 +550,7 @@ export const CBTExamInterface: React.FC<CBTExamInterfaceProps> = ({
                     )}
                   </div>
 
-                  {/* Authentic NTA CBT On-screen Virtual Keypad */}
+                  {/* Virtual Keypad */}
                   <div className="bg-slate-100 p-3 rounded-xl border border-slate-200 space-y-2">
                     <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">
                       Virtual Console Keypad
@@ -510,7 +586,7 @@ export const CBTExamInterface: React.FC<CBTExamInterfaceProps> = ({
                             key={key}
                             type="button"
                             onClick={() => handleKeypadPress(key)}
-                            className="p-2.5 text-sm font-bold font-mono text-slate-800 bg-white hover:bg-blue-50 hover:text-blue-700 border border-slate-300 rounded-lg shadow-xs transition-all active:scale-95"
+                            className="p-2.5 text-sm font-bold font-mono text-slate-800 bg-white hover:bg-black hover:text-white border border-slate-300 rounded-lg shadow-xs transition-all active:scale-95"
                           >
                             {key}
                           </button>
@@ -535,42 +611,40 @@ export const CBTExamInterface: React.FC<CBTExamInterfaceProps> = ({
                       <label
                         key={key}
                         onClick={() => handleOptionSelect(key)}
-                        className={`option-card flex items-center space-x-3.5 rounded-xl border cursor-pointer transition-all ${
+                        className={`option-card flex items-center space-x-3.5 rounded-xl border cursor-pointer transition-all p-3.5 ${
                           isSelected
-                            ? 'bg-blue-50/80 border-blue-600 shadow-xs ring-1 ring-blue-600'
+                            ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
                             : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-800'
                         }`}
                       >
-                        {/* Radio Circle */}
                         <div className="shrink-0 flex items-center justify-center">
                           <div
                             className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
                               isSelected
-                                ? 'border-blue-600 bg-blue-600'
+                                ? 'border-white bg-white'
                                 : 'border-slate-400 bg-white'
                             }`}
                           >
-                            {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
+                            {isSelected && <div className="w-2 h-2 rounded-full bg-black" />}
                           </div>
                         </div>
 
-                        {/* Option Key Badge */}
                         <span
-                          className={`text-xs font-bold w-5 text-center shrink-0 ${
-                            isSelected ? 'text-blue-700' : 'text-slate-500'
+                          className={`w-6 h-6 rounded-md font-bold flex items-center justify-center text-xs shrink-0 ${
+                            isSelected
+                              ? 'bg-white text-black font-mono'
+                              : 'bg-slate-100 text-slate-600 border border-slate-200 font-mono'
                           }`}
                         >
                           {key}
                         </span>
 
-                        {/* Option Statement with KaTeX */}
-                        <div className="option-content flex-1 text-sm overflow-x-auto">
+                        <div className={`flex-1 text-sm font-medium leading-normal min-w-0 ${isSelected ? 'text-white' : 'text-slate-900'}`}>
                           <MathRenderer
-                            text={optText}
-                            html={optHtml}
+                            content={optHtml || optText}
                             images={activeQuestion?.images}
                             questionCode={activeQuestion?.question_code}
-                            isOption
+                            isOption={true}
                           />
                         </div>
                       </label>
@@ -581,16 +655,15 @@ export const CBTExamInterface: React.FC<CBTExamInterfaceProps> = ({
             )}
           </div>
 
-          {/* 3. Bottom Action Bar */}
-          <div className="bg-slate-50 border-t border-slate-200 px-6 py-3 flex flex-wrap items-center justify-between gap-3 shrink-0">
-            {/* Left Actions: Clear & Mark for Review */}
+          {/* Action Toolbar */}
+          <footer className="bg-slate-50/80 border-t border-slate-200/80 p-4 px-6 flex flex-wrap items-center justify-between gap-3 shrink-0">
             <div className="flex items-center space-x-2">
               <button
                 type="button"
                 onClick={handleSaveAndMarkForReview}
-                className="px-3 py-2 bg-white hover:bg-slate-100 text-purple-700 border border-purple-300 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 shadow-2xs"
+                className="px-4 py-2 bg-purple-50 hover:bg-purple-100 text-purple-900 border border-purple-200 font-semibold text-xs rounded-lg transition flex items-center space-x-1.5"
               >
-                <Flag className="w-3.5 h-3.5 text-purple-600" />
+                <Flag className="w-3.5 h-3.5 text-purple-700" />
                 <span>Mark for Review & Next</span>
               </button>
 
@@ -598,19 +671,19 @@ export const CBTExamInterface: React.FC<CBTExamInterfaceProps> = ({
                 type="button"
                 onClick={handleClearResponse}
                 disabled={!currentSelection}
-                className="px-3 py-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 rounded-lg text-xs font-semibold disabled:opacity-40 transition"
+                className="px-4 py-2 bg-white hover:bg-slate-100 disabled:opacity-40 text-slate-700 border border-slate-300 font-semibold text-xs rounded-lg transition flex items-center space-x-1.5"
               >
-                Clear Response
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Clear Response</span>
               </button>
             </div>
 
-            {/* Right Actions: Prev, Save & Next, Submit */}
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2.5">
               <button
                 type="button"
                 onClick={handlePrevious}
                 disabled={currentIndex === 0}
-                className="px-3.5 py-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 rounded-lg text-xs font-semibold disabled:opacity-40 transition flex items-center space-x-1"
+                className="px-4 py-2 bg-white hover:bg-slate-100 disabled:opacity-40 text-slate-700 border border-slate-300 font-semibold text-xs rounded-lg transition flex items-center space-x-1.5"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
                 <span>Previous</span>
@@ -619,127 +692,55 @@ export const CBTExamInterface: React.FC<CBTExamInterfaceProps> = ({
               <button
                 type="button"
                 onClick={handleSaveAndNext}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition flex items-center space-x-1.5 shadow-xs"
+                className="px-6 py-2 bg-black hover:bg-slate-900 text-white font-bold text-xs rounded-lg transition shadow-xs flex items-center space-x-1.5"
               >
                 <span>Save & Next</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
-
-              <button
-                type="button"
-                onClick={() => setIsSubmitModalOpen(true)}
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition flex items-center space-x-1.5 shadow-xs ml-2"
-              >
-                <Send className="w-3.5 h-3.5" />
-                <span>Submit Test</span>
-              </button>
             </div>
-          </div>
+          </footer>
         </main>
 
-        {/* RIGHT: Authentic CBT Question Palette (25% on Desktop) */}
+        {/* RIGHT: Section-Aware Question Navigator Palette (25% on Desktop) */}
         <aside
-          className={`lg:w-80 border-l border-slate-200 bg-slate-50 flex flex-col shrink-0 ${
-            isPaletteOpenMobile
-              ? 'fixed inset-0 z-40 bg-white overflow-y-auto'
-              : 'hidden lg:flex'
+          className={`fixed inset-y-0 right-0 z-40 w-80 bg-white border-l border-slate-200 shadow-2xl lg:shadow-none lg:static lg:w-80 flex flex-col transition-transform duration-200 ease-in-out ${
+            isPaletteOpenMobile ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'
           }`}
         >
-          {/* Palette Header */}
-          <div className="bg-slate-100 border-b border-slate-200 p-3.5 flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-800 uppercase tracking-wider">
-              Question Palette
+          <div className="p-3 bg-black text-white flex items-center justify-between lg:hidden shrink-0">
+            <span className="text-xs font-bold uppercase tracking-wider">
+              Question Navigator
             </span>
             <button
               onClick={() => setIsPaletteOpenMobile(false)}
-              className="lg:hidden text-slate-500 hover:text-slate-800 p-1"
+              className="text-slate-400 hover:text-white p-1"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
 
-          {/* Palette Legend Cards */}
-          <div className="p-3 border-b border-slate-200 bg-white grid grid-cols-2 gap-2 text-[10px] text-slate-600">
-            <div className="flex items-center space-x-1.5">
-              <span className="w-5 h-5 rounded-xs bg-emerald-600 text-white font-bold flex items-center justify-center text-[10px]">
-                {statusCounts.answered}
-              </span>
-              <span>Answered</span>
-            </div>
-
-            <div className="flex items-center space-x-1.5">
-              <span className="w-5 h-5 rounded-xs bg-red-600 text-white font-bold flex items-center justify-center text-[10px]">
-                {statusCounts.notAnswered}
-              </span>
-              <span>Not Answered</span>
-            </div>
-
-            <div className="flex items-center space-x-1.5">
-              <span className="w-5 h-5 rounded-xs bg-slate-200 text-slate-700 font-bold flex items-center justify-center text-[10px]">
-                {statusCounts.notVisited}
-              </span>
-              <span>Not Visited</span>
-            </div>
-
-            <div className="flex items-center space-x-1.5">
-              <span className="w-5 h-5 rounded-xs bg-purple-600 text-white font-bold flex items-center justify-center text-[10px]">
-                {statusCounts.marked}
-              </span>
-              <span>Marked for Review</span>
-            </div>
-
-            <div className="col-span-2 flex items-center space-x-1.5 pt-0.5">
-              <div className="relative w-5 h-5 rounded-xs bg-purple-600 text-white font-bold flex items-center justify-center text-[10px]">
-                {statusCounts.answeredAndMarked}
-                <div className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 border border-white" />
-              </div>
-              <span className="truncate">Answered & Marked for Review</span>
-            </div>
+          {/* Section Navigator Component */}
+          <div className="flex-1 overflow-hidden flex flex-col min-h-0">
+            <SubjectQuestionNavigator
+              questions={questions}
+              currentIndex={currentIndex}
+              responses={responses}
+              statuses={statuses}
+              activeTopSection={activeTopSection}
+              activeBiologySubSection={activeBiologySubSection}
+              onSelectQuestion={handleJumpToQuestion}
+            />
           </div>
 
-          {/* Question Numbers Grid */}
-          <div className="flex-1 p-3.5 overflow-y-auto">
-            <div className="grid grid-cols-5 gap-2">
-              {questions.map((q, idx) => {
-                const status = statuses[q.id] || 'NOT_VISITED';
-                const isCurrent = currentIndex === idx;
+          {/* Palette Legend */}
+          <QuestionStatusLegend counts={statusCounts} />
 
-                let btnClass = 'bg-slate-200 text-slate-700 hover:bg-slate-300'; // NOT_VISITED
-
-                if (status === 'ANSWERED') {
-                  btnClass = 'bg-emerald-600 text-white hover:bg-emerald-700';
-                } else if (status === 'NOT_ANSWERED') {
-                  btnClass = 'bg-red-600 text-white hover:bg-red-700';
-                } else if (status === 'MARKED_FOR_REVIEW') {
-                  btnClass = 'bg-purple-600 text-white hover:bg-purple-700';
-                } else if (status === 'ANSWERED_AND_MARKED_FOR_REVIEW') {
-                  btnClass = 'bg-purple-600 text-white hover:bg-purple-700 ring-2 ring-emerald-400';
-                }
-
-                return (
-                  <button
-                    key={q.id}
-                    onClick={() => handleJumpToQuestion(idx)}
-                    className={`relative w-full aspect-square rounded text-xs font-bold transition flex items-center justify-center ${btnClass} ${
-                      isCurrent ? 'ring-2 ring-blue-500 ring-offset-2' : ''
-                    }`}
-                  >
-                    <span>{idx + 1}</span>
-                    {status === 'ANSWERED_AND_MARKED_FOR_REVIEW' && (
-                      <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Palette Footer Actions */}
-          <div className="p-3 border-t border-slate-200 bg-white flex flex-col space-y-2">
+          {/* Submit Actions */}
+          <div className="p-3.5 border-t border-slate-200/80 bg-white flex flex-col space-y-2 shrink-0">
             <button
               type="button"
               onClick={() => setIsSubmitModalOpen(true)}
-              className="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded text-xs uppercase tracking-wider transition shadow-xs flex items-center justify-center space-x-1"
+              className="w-full py-2.5 bg-black hover:bg-slate-900 text-white font-bold rounded-lg text-xs uppercase tracking-wider transition shadow-sm flex items-center justify-center space-x-1.5"
             >
               <Send className="w-3.5 h-3.5" />
               <span>Submit Examination</span>
@@ -758,10 +759,10 @@ export const CBTExamInterface: React.FC<CBTExamInterfaceProps> = ({
 
       {/* 4. Final Submission Confirmation Modal */}
       {isSubmitModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl max-w-md w-full p-6 shadow-2xl space-y-5">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 sm:p-8 shadow-2xl space-y-5">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <h3 className="text-base font-bold text-slate-900">Confirm Exam Submission</h3>
+              <h3 className="font-editorial-serif text-lg font-bold text-slate-950">Confirm Exam Submission</h3>
               <button
                 onClick={() => setIsSubmitModalOpen(false)}
                 className="text-slate-400 hover:text-slate-600 p-1"
@@ -770,27 +771,27 @@ export const CBTExamInterface: React.FC<CBTExamInterfaceProps> = ({
               </button>
             </div>
 
-            <p className="text-xs text-slate-600 leading-relaxed">
-              Are you sure you want to finish and submit your examination? Once submitted, you cannot change your answers.
+            <p className="text-xs text-slate-600 leading-relaxed font-normal">
+              Are you sure you want to finish and submit your examination? Once submitted, your scorecard and mistake revision compendium will be finalized.
             </p>
 
             {/* Summary Statistics Table */}
-            <div className="border border-slate-200 rounded-lg overflow-hidden text-xs">
+            <div className="border border-slate-200 rounded-xl overflow-hidden text-xs">
               <div className="grid grid-cols-2 p-2.5 bg-slate-50 border-b border-slate-200 font-semibold text-slate-700">
                 <span>Total Questions</span>
-                <span className="font-mono text-right">{questions.length}</span>
+                <span className="font-mono text-right font-bold">{questions.length}</span>
               </div>
-              <div className="grid grid-cols-2 p-2.5 border-b border-slate-100 text-emerald-800 bg-emerald-50/40 font-semibold">
+              <div className="grid grid-cols-2 p-2.5 border-b border-slate-100 text-slate-900 bg-white font-semibold">
                 <span>Answered</span>
-                <span className="font-mono text-right">{statusCounts.answered}</span>
+                <span className="font-mono text-right font-bold">{statusCounts.answered}</span>
               </div>
-              <div className="grid grid-cols-2 p-2.5 border-b border-slate-100 text-red-800 bg-red-50/40 font-semibold">
+              <div className="grid grid-cols-2 p-2.5 border-b border-slate-100 text-amber-900 bg-amber-50/40 font-semibold">
                 <span>Not Answered</span>
-                <span className="font-mono text-right">{statusCounts.notAnswered}</span>
+                <span className="font-mono text-right font-bold">{statusCounts.notAnswered}</span>
               </div>
-              <div className="grid grid-cols-2 p-2.5 border-b border-slate-100 text-purple-800 bg-purple-50/40 font-semibold">
+              <div className="grid grid-cols-2 p-2.5 border-b border-slate-100 text-purple-900 bg-purple-50/40 font-semibold">
                 <span>Marked for Review</span>
-                <span className="font-mono text-right">
+                <span className="font-mono text-right font-bold">
                   {statusCounts.marked + statusCounts.answeredAndMarked}
                 </span>
               </div>
@@ -811,7 +812,7 @@ export const CBTExamInterface: React.FC<CBTExamInterfaceProps> = ({
               <button
                 type="button"
                 onClick={handleFinalSubmit}
-                className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition shadow-xs"
+                className="px-5 py-2 bg-black hover:bg-slate-900 text-white rounded-lg text-xs font-bold transition shadow-xs"
               >
                 Yes, Submit Test
               </button>

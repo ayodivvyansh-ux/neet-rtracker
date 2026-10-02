@@ -5,19 +5,21 @@
 
 import React, { useState } from 'react';
 import { CbtQuestionEvaluation, CbtTestResult, CbtTestSession } from '../types';
+import { ResultSummary } from './results/ResultSummary';
+import { SubjectPerformanceCard } from './results/SubjectPerformanceCard';
+import { MistakeQuestionList } from './results/MistakeQuestionList';
 import { MathRenderer } from './MathRenderer';
 import { QuestionImage } from './QuestionImage';
 import { getStandaloneQuestionImages } from '../services/imageService';
 import {
-  AlertCircle,
   ArrowLeft,
-  Award,
   Check,
   CheckCircle2,
-  Clock,
-  Filter,
+  ChevronDown,
+  ChevronUp,
+  FileQuestion,
   HelpCircle,
-  PieChart,
+  ListFilter,
   RefreshCw,
   RotateCcw,
   Sparkles,
@@ -42,62 +44,52 @@ export const TestResults: React.FC<TestResultsProps> = ({
   onBackToDashboard,
   onNavigateToCreateTest
 }) => {
-  const [filterMode, setFilterMode] = useState<'all' | 'correct' | 'incorrect' | 'unattempted'>('all');
-  const [expandedSolutions, setExpandedSolutions] = useState<Record<string, boolean>>({});
+  const [activeTab, setActiveTab] = useState<'mistakes' | 'all'>('mistakes');
+  const [expandedAllSolutions, setExpandedAllSolutions] = useState<Record<string, boolean>>({});
 
-  const toggleSolution = (id: string) => {
-    setExpandedSolutions((prev) => ({
+  const wrongIds = result.evaluations.filter((q) => q.isAttempted && !q.isCorrect).map((q) => q.id);
+
+  const toggleAllSolution = (id: string) => {
+    setExpandedAllSolutions((prev) => ({
       ...prev,
       [id]: !prev[id]
     }));
   };
 
-  const filteredEvaluations = result.evaluations.filter((q) => {
-    if (filterMode === 'correct') return q.isCorrect;
-    if (filterMode === 'incorrect') return q.isAttempted && !q.isCorrect;
-    if (filterMode === 'unattempted') return !q.isAttempted;
-    return true;
-  });
-
-  const wrongIds = result.evaluations.filter((q) => q.isAttempted && !q.isCorrect).map((q) => q.id);
-
-  // Format time taken
-  const mins = Math.floor(result.totalTimeSpentSeconds / 60);
-  const secs = result.totalTimeSpentSeconds % 60;
-  const timeTakenFormatted = `${mins}m ${secs}s`;
-
   return (
-    <div className="max-w-5xl mx-auto px-4 py-6 font-sans space-y-6">
-      {/* 1. Header Navigation */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-200 gap-3">
+    <div className="max-w-6xl mx-auto px-4 py-6 font-sans space-y-8">
+      {/* 1. Header Navigation Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-200 gap-4">
         <div>
           <button
+            type="button"
             onClick={onBackToDashboard}
-            className="inline-flex items-center space-x-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 transition mb-1"
+            className="inline-flex items-center space-x-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 transition mb-1.5"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Dashboard</span>
+            <span>Back to Dashboard</span>
           </button>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight">Examination Scorecard & Review</h1>
+          <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+            Performance Scorecard & Examination Review
+          </h1>
           <p className="text-xs text-slate-500 font-normal">
-            {session.title} · Completed on {new Date(session.completedAt || Date.now()).toLocaleDateString()}
+            {session.title} · Test ID: <span className="font-mono">{session.id}</span>
           </p>
         </div>
 
-        <div className="flex items-center space-x-2">
-          {wrongIds.length > 0 && (
-            <button
-              onClick={() => onRetakeIncorrectOnly(wrongIds)}
-              className="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-amber-50 text-amber-800 border border-amber-300 rounded-lg text-xs font-semibold hover:bg-amber-100 transition"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              <span>Retake {wrongIds.length} Mistakes</span>
-            </button>
-          )}
+        <div className="flex items-center space-x-2.5 shrink-0">
+          <button
+            type="button"
+            onClick={onNavigateToCreateTest}
+            className="inline-flex items-center space-x-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition"
+          >
+            <span>New Test</span>
+          </button>
 
           <button
+            type="button"
             onClick={onRetakeFullTest}
-            className="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-slate-900 text-white rounded-lg text-xs font-semibold hover:bg-slate-800 transition"
+            className="inline-flex items-center space-x-1.5 px-3.5 py-2 bg-slate-900 text-white rounded-lg text-xs font-bold hover:bg-slate-800 transition shadow-sm"
           >
             <RefreshCw className="w-3.5 h-3.5" />
             <span>Retake Exam</span>
@@ -105,392 +97,243 @@ export const TestResults: React.FC<TestResultsProps> = ({
         </div>
       </div>
 
-      {/* 2. Primary Metric Scoreboard Card */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-6">
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 text-center divide-y md:divide-y-0 md:divide-x divide-slate-100">
-          {/* Total Score */}
-          <div className="pt-2 md:pt-0">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
-              Total Score
-            </span>
-            <div className="flex items-baseline justify-center space-x-1">
-              <span className="text-2xl font-black text-slate-900 tabular-nums">
-                {result.totalScore}
-              </span>
-              <span className="text-xs text-slate-400 font-medium">/ {result.maxScore}</span>
-            </div>
-            <span className="text-[10px] text-slate-500 font-medium block mt-1">
-              Marking (+4 / -1)
-            </span>
-          </div>
+      {/* 2. Hero Scoreboard & Key Metrics */}
+      <ResultSummary session={session} result={result} />
 
-          {/* Accuracy */}
-          <div className="pt-2 md:pt-0">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
-              Accuracy
-            </span>
-            <span className="text-2xl font-black text-blue-600 tabular-nums block">
-              {result.accuracy}%
-            </span>
-            <span className="text-[10px] text-slate-500 font-medium block mt-1">
-              Correct / Attempted
-            </span>
-          </div>
+      {/* 3. Subject-Wise Performance Hierarchy */}
+      <SubjectPerformanceCard evaluations={result.evaluations} result={result} />
 
-          {/* Correct */}
-          <div className="pt-2 md:pt-0">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
-              Correct
-            </span>
-            <span className="text-2xl font-black text-emerald-600 tabular-nums block">
-              {result.correctCount}
-            </span>
-            <span className="text-[10px] text-emerald-700 font-medium block mt-1">
-              +{result.correctCount * 4} Marks
-            </span>
-          </div>
-
-          {/* Incorrect */}
-          <div className="pt-2 md:pt-0">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
-              Incorrect
-            </span>
-            <span className="text-2xl font-black text-red-600 tabular-nums block">
-              {result.incorrectCount}
-            </span>
-            <span className="text-[10px] text-red-700 font-medium block mt-1">
-              -{result.incorrectCount} Marks
-            </span>
-          </div>
-
-          {/* Unattempted */}
-          <div className="pt-2 md:pt-0">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
-              Unattempted
-            </span>
-            <span className="text-2xl font-black text-slate-500 tabular-nums block">
-              {result.unattemptedCount}
-            </span>
-            <span className="text-[10px] text-slate-400 font-medium block mt-1">
-              0 Marks
-            </span>
-          </div>
-
-          {/* Time Taken */}
-          <div className="pt-2 md:pt-0">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
-              Time Taken
-            </span>
-            <span className="text-xl font-bold text-slate-800 tabular-nums block">
-              {timeTakenFormatted}
-            </span>
-            <span className="text-[10px] text-slate-400 font-medium block mt-1">
-              Limit: {session.durationMinutes}m
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* 3. Subject-wise Performance Matrix */}
-      {Object.keys(result.subjectWise).length > 0 && (
-        <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-5">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
-            Subject-wise Performance Breakdown
-          </h3>
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs text-left text-slate-700">
-              <thead className="bg-slate-50 text-slate-500 uppercase tracking-wider font-semibold border-y border-slate-200 text-[10px]">
-                <tr>
-                  <th className="py-2.5 px-3">Subject</th>
-                  <th className="py-2.5 px-3 text-center">Correct (+4)</th>
-                  <th className="py-2.5 px-3 text-center">Incorrect (-1)</th>
-                  <th className="py-2.5 px-3 text-center">Unattempted</th>
-                  <th className="py-2.5 px-3 text-right">Score</th>
-                  <th className="py-2.5 px-3 text-right">Max</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {Object.entries(result.subjectWise).map(([subj, stats]) => (
-                  <tr key={subj} className="hover:bg-slate-50/50">
-                    <td className="py-2.5 px-3 font-semibold text-slate-900">{subj}</td>
-                    <td className="py-2.5 px-3 text-center font-bold text-emerald-600 font-mono">
-                      {stats.correct}
-                    </td>
-                    <td className="py-2.5 px-3 text-center font-bold text-red-600 font-mono">
-                      {stats.incorrect}
-                    </td>
-                    <td className="py-2.5 px-3 text-center font-mono text-slate-400">
-                      {stats.unattempted}
-                    </td>
-                    <td className="py-2.5 px-3 text-right font-black text-slate-900 font-mono">
-                      {stats.score}
-                    </td>
-                    <td className="py-2.5 px-3 text-right font-mono text-slate-400">
-                      {stats.maxScore}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* 4. Question-by-Question Review Section */}
+      {/* 4. Tab Navigation for Review: Mistake Collection vs All Questions */}
       <div className="space-y-4">
-        {/* Filter bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <h2 className="text-sm font-bold text-slate-900">
-            Question-by-Question Review ({filteredEvaluations.length} Questions)
-          </h2>
+        <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+          <div className="flex items-center space-x-2">
+            <button
+              type="button"
+              onClick={() => setActiveTab('mistakes')}
+              className={`px-4 py-2 rounded-lg text-xs font-bold transition flex items-center space-x-2 ${
+                activeTab === 'mistakes'
+                  ? 'bg-slate-900 text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              }`}
+            >
+              <span>Mistake Revision Target</span>
+              <span
+                className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono ${
+                  activeTab === 'mistakes'
+                    ? 'bg-red-500 text-white'
+                    : 'bg-slate-200 text-slate-700'
+                }`}
+              >
+                {result.incorrectCount + result.unattemptedCount}
+              </span>
+            </button>
 
-          <div className="inline-flex rounded-lg border border-slate-200 bg-white p-0.5 text-xs font-medium">
             <button
-              onClick={() => setFilterMode('all')}
-              className={`px-3 py-1 rounded-md transition ${
-                filterMode === 'all'
-                  ? 'bg-slate-900 text-white shadow-2xs'
-                  : 'text-slate-600 hover:text-slate-900'
+              type="button"
+              onClick={() => setActiveTab('all')}
+              className={`px-4 py-2 rounded-lg text-xs font-bold transition flex items-center space-x-2 ${
+                activeTab === 'all'
+                  ? 'bg-slate-900 text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
               }`}
             >
-              All ({result.evaluations.length})
-            </button>
-            <button
-              onClick={() => setFilterMode('correct')}
-              className={`px-3 py-1 rounded-md transition ${
-                filterMode === 'correct'
-                  ? 'bg-emerald-600 text-white shadow-2xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Correct ({result.correctCount})
-            </button>
-            <button
-              onClick={() => setFilterMode('incorrect')}
-              className={`px-3 py-1 rounded-md transition ${
-                filterMode === 'incorrect'
-                  ? 'bg-red-600 text-white shadow-2xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Incorrect ({result.incorrectCount})
-            </button>
-            <button
-              onClick={() => setFilterMode('unattempted')}
-              className={`px-3 py-1 rounded-md transition ${
-                filterMode === 'unattempted'
-                  ? 'bg-slate-500 text-white shadow-2xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Unattempted ({result.unattemptedCount})
+              <span>Full Question Review</span>
+              <span
+                className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono ${
+                  activeTab === 'all'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-slate-200 text-slate-700'
+                }`}
+              >
+                {result.evaluations.length}
+              </span>
             </button>
           </div>
         </div>
 
-        {/* Question Cards List */}
-        <div className="space-y-4">
-          {filteredEvaluations.map((q, idx) => {
-            const hasSolution = Boolean(q.solution_text || q.solution_html);
-            const isSolutionOpen = Boolean(expandedSolutions[q.id]);
-            const imagesList = Array.isArray(q.images)
-              ? q.images
-              : q.images
-              ? [q.images]
-              : [];
-            const standaloneImages = getStandaloneQuestionImages(imagesList, q.question_html);
+        {/* 5. Tab Content: Mistakes Collection */}
+        {activeTab === 'mistakes' && (
+          <MistakeQuestionList
+            session={session}
+            result={result}
+            onRetakeMistakes={onRetakeIncorrectOnly}
+          />
+        )}
 
-            return (
-              <div
-                key={q.id}
-                className="bg-white rounded-xl border border-slate-200 shadow-xs p-6 space-y-4"
-              >
-                {/* Question Header */}
-                <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-100">
-                  <div className="flex items-center space-x-2">
-                    <span className="font-bold text-xs text-slate-800">
-                      Q{idx + 1}.
-                    </span>
-                    <span className="font-mono text-xs font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
-                      {q.question_code}
-                    </span>
-                    <span className="text-xs text-slate-500">{q.subject}</span>
-                    <span className="text-xs text-slate-400">·</span>
-                    <span className="text-xs text-slate-500 truncate max-w-xs">{q.chapter_name}</span>
-                  </div>
+        {/* 6. Tab Content: All Questions Full Review */}
+        {activeTab === 'all' && (
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-6 space-y-4">
+            <div className="pb-3 border-b border-slate-200">
+              <h2 className="text-base font-bold text-slate-900">
+                Complete Exam Review ({result.evaluations.length} Questions)
+              </h2>
+              <p className="text-xs text-slate-500">
+                Chronological list of all questions in this exam session with answers and solutions.
+              </p>
+            </div>
 
-                  <div className="flex items-center space-x-2">
-                    {/* Status Pill */}
-                    {q.isCorrect ? (
-                      <span className="inline-flex items-center space-x-1 text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-300 px-2.5 py-0.5 rounded">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                        <span>Correct (+4)</span>
-                      </span>
-                    ) : q.isAttempted ? (
-                      <span className="inline-flex items-center space-x-1 text-xs font-bold text-red-800 bg-red-50 border border-red-300 px-2.5 py-0.5 rounded">
-                        <XCircle className="w-3.5 h-3.5 text-red-600" />
-                        <span>Incorrect (-1)</span>
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center space-x-1 text-xs font-medium text-slate-600 bg-slate-100 border border-slate-200 px-2.5 py-0.5 rounded">
-                        <span>Unattempted (0)</span>
-                      </span>
-                    )}
+            <div className="space-y-4">
+              {result.evaluations.map((q, idx) => {
+                const isCorrect = q.isCorrect;
+                const isWrong = q.isAttempted && !q.isCorrect;
+                const isUnattempted = !q.isAttempted;
+                const isExpanded = expandedAllSolutions[q.id];
 
-                    <span className="text-[11px] text-slate-400 tabular-nums">
-                      Time: {q.timeSpentSeconds}s
-                    </span>
-                  </div>
-                </div>
+                const allImages = Array.isArray(q.images)
+                  ? q.images
+                  : q.images
+                  ? [q.images]
+                  : [];
+                const standaloneImages = getStandaloneQuestionImages(
+                  allImages,
+                  q.question_html,
+                  q.options
+                    ? Object.entries(q.options).map(([k, v]) => ({
+                        option_html: q.optionsHtml?.[k] || v
+                      }))
+                    : []
+                );
 
-                {/* Question Text */}
-                <div className="text-sm text-slate-900 leading-relaxed font-normal">
-                  <MathRenderer
-                    text={q.question_text}
-                    html={q.question_html}
-                    images={q.images}
-                    questionCode={q.question_code}
-                  />
-                </div>
+                let cardBorder = 'border-slate-200 bg-white';
+                if (isCorrect) cardBorder = 'border-emerald-200 bg-emerald-50/10';
+                if (isWrong) cardBorder = 'border-red-200 bg-red-50/10';
+                if (isUnattempted) cardBorder = 'border-amber-200 bg-amber-50/10';
 
-                {/* Standalone Diagrams (only if not already embedded in question HTML) */}
-                {standaloneImages.length > 0 && (
-                  <div className="space-y-2 py-1">
-                    {standaloneImages.map((img, i) => (
-                      <QuestionImage
-                        key={i}
-                        image={img}
-                        questionCode={q.question_code}
-                        alt={`Diagram for ${q.question_code}`}
-                      />
-                    ))}
-                  </div>
-                )}
-
-                {/* Answer Choices Matrix (Single Choice) or Numerical Result Card */}
-                {q.question_type === 'integer' || q.question_type === 'numerical' ? (
-                  <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50 space-y-2 text-xs">
-                    <span className="font-bold uppercase tracking-wider text-slate-500 block text-[10px]">
-                      Numerical Answer Review
-                    </span>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                      <div className="p-2.5 rounded-lg bg-white border border-slate-200">
-                        <span className="text-slate-500 block text-[11px]">Your Entered Answer:</span>
-                        <span
-                          className={`font-mono font-bold text-sm ${
-                            !q.isAttempted
-                              ? 'text-slate-400 italic'
-                              : q.isCorrect
-                              ? 'text-emerald-700'
-                              : 'text-red-700'
-                          }`}
-                        >
-                          {q.userResponse ? q.userResponse : 'Unattempted'}
+                return (
+                  <div key={q.id} className={`rounded-xl border p-5 space-y-4 ${cardBorder}`}>
+                    <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-xs font-bold text-slate-900 font-mono">
+                          Q{idx + 1}
+                        </span>
+                        <span className="text-xs font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200 font-mono">
+                          {q.question_code}
+                        </span>
+                        <span className="text-xs text-slate-600">
+                          {q.subject} · {q.chapter_name}
                         </span>
                       </div>
-                      <div className="p-2.5 rounded-lg bg-emerald-50 border border-emerald-200">
-                        <span className="text-emerald-800 block text-[11px] font-medium">Correct Value:</span>
-                        <span className="font-mono font-bold text-sm text-emerald-950">
-                          {q.correctOption}
-                        </span>
+
+                      <div>
+                        {isCorrect && (
+                          <span className="inline-flex items-center space-x-1 text-xs font-bold text-emerald-700 bg-emerald-100 border border-emerald-200 px-2.5 py-1 rounded-md">
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            <span>Correct (+4 Marks)</span>
+                          </span>
+                        )}
+                        {isWrong && (
+                          <span className="inline-flex items-center space-x-1 text-xs font-bold text-red-700 bg-red-100 border border-red-200 px-2.5 py-1 rounded-md">
+                            <XCircle className="w-3.5 h-3.5" />
+                            <span>Wrong: ({q.userResponse}) · Correct: ({q.correctOption})</span>
+                          </span>
+                        )}
+                        {isUnattempted && (
+                          <span className="inline-flex items-center space-x-1 text-xs font-bold text-amber-800 bg-amber-100 border border-amber-200 px-2.5 py-1 rounded-md">
+                            <HelpCircle className="w-3.5 h-3.5" />
+                            <span>Unattempted · Correct: ({q.correctOption})</span>
+                          </span>
+                        )}
                       </div>
                     </div>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                    {['A', 'B', 'C', 'D'].map((key) => {
-                      const optText = q.options[key] || '';
-                      const optHtml = q.optionsHtml?.[key] || null;
-                      const isUserPick = q.userResponse === key;
-                      const isActualCorrect = q.correctOption === key;
 
-                      let cardClass = 'bg-slate-50 border-slate-200 text-slate-800';
+                    <div className="text-sm text-slate-900 leading-relaxed font-normal">
+                      <MathRenderer
+                        content={q.question_html || q.question_text}
+                        images={q.images}
+                        questionCode={q.question_code}
+                      />
+                    </div>
 
-                      if (isActualCorrect) {
-                        cardClass = 'bg-emerald-50 border-emerald-300 text-emerald-950 font-medium ring-1 ring-emerald-400';
-                      } else if (isUserPick && !q.isCorrect) {
-                        cardClass = 'bg-red-50 border-red-300 text-red-950 font-medium ring-1 ring-red-400';
-                      }
+                    {standaloneImages.length > 0 && (
+                      <div className="my-3 flex flex-col items-center">
+                        {standaloneImages.map((img: any, i: number) => (
+                          <QuestionImage
+                            key={img.id || i}
+                            image={img}
+                            questionCode={q.question_code}
+                            className="rounded-lg border border-slate-200 shadow-2xs max-w-lg"
+                          />
+                        ))}
+                      </div>
+                    )}
 
-                      return (
-                        <div
-                          key={key}
-                          className={`option-card flex items-center space-x-3 rounded-xl border text-xs transition-all ${cardClass}`}
-                        >
-                          <span
-                            className={`w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] shrink-0 ${
-                              isActualCorrect
-                                ? 'bg-emerald-600 text-white'
-                                : isUserPick && !q.isCorrect
-                                ? 'bg-red-600 text-white'
-                                : 'bg-white border border-slate-300 text-slate-700'
-                            }`}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2">
+                      {['A', 'B', 'C', 'D'].map((optKey) => {
+                        const optText = q.options?.[optKey];
+                        const optHtml = q.optionsHtml?.[optKey];
+                        if (!optText && !optHtml) return null;
+
+                        const isUserPick = q.userResponse === optKey;
+                        const isCorrectOpt = q.correctOption === optKey;
+
+                        let style = 'bg-white border-slate-200 text-slate-700';
+                        if (isCorrectOpt) {
+                          style = 'bg-emerald-50 border-emerald-300 text-emerald-950 font-semibold';
+                        } else if (isUserPick) {
+                          style = 'bg-red-50 border-red-300 text-red-950 font-semibold';
+                        }
+
+                        return (
+                          <div
+                            key={optKey}
+                            className={`p-3 rounded-lg border text-xs flex items-start space-x-2.5 ${style}`}
                           >
-                            {key}
-                          </span>
+                            <span
+                              className={`w-5 h-5 rounded-full font-bold flex items-center justify-center text-[10px] shrink-0 ${
+                                isCorrectOpt
+                                  ? 'bg-emerald-600 text-white'
+                                  : isUserPick
+                                  ? 'bg-red-600 text-white'
+                                  : 'bg-slate-100 text-slate-600 border border-slate-200'
+                              }`}
+                            >
+                              {optKey}
+                            </span>
+                            <div className="flex-1 min-w-0">
+                              <MathRenderer
+                                content={optHtml || optText}
+                                images={q.images}
+                                questionCode={q.question_code}
+                                isOption={true}
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
 
-                          <div className="option-content flex-1 overflow-x-auto">
+                    {(q.solution_text || q.solution_html) && (
+                      <div className="pt-2 border-t border-slate-100">
+                        <button
+                          type="button"
+                          onClick={() => toggleAllSolution(q.id)}
+                          className="inline-flex items-center space-x-1.5 text-xs font-bold text-blue-600 hover:text-blue-800 transition"
+                        >
+                          <span>{isExpanded ? 'Hide Solution' : 'View Official Solution'}</span>
+                          {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                        </button>
+
+                        {isExpanded && (
+                          <div className="mt-2.5 p-4 rounded-lg bg-blue-50/70 border border-blue-200 text-xs text-slate-800 space-y-2">
+                            <span className="font-bold text-blue-900 block uppercase tracking-wider text-[10px]">
+                              Official Solution & Key Concept:
+                            </span>
                             <MathRenderer
-                              text={optText}
-                              html={optHtml}
+                              content={q.solution_html || q.solution_text || ''}
                               images={q.images}
                               questionCode={q.question_code}
-                              isOption
+                              className="prose prose-xs max-w-none text-slate-800 leading-relaxed"
                             />
                           </div>
-
-                          {isActualCorrect && (
-                            <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded shrink-0 ml-1.5">
-                              Correct
-                            </span>
-                          )}
-
-                          {isUserPick && !isActualCorrect && (
-                            <span className="text-[10px] font-bold text-red-700 bg-red-100 px-1.5 py-0.5 rounded shrink-0 ml-1.5">
-                              Your Choice
-                            </span>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-
-                {/* Solution Toggle & Details */}
-                {hasSolution ? (
-                  <div className="pt-2 border-t border-slate-100">
-                    <button
-                      type="button"
-                      onClick={() => toggleSolution(q.id)}
-                      className="inline-flex items-center space-x-1.5 text-xs font-semibold text-blue-600 hover:text-blue-800 transition"
-                    >
-                      <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-                      <span>{isSolutionOpen ? 'Hide Detailed Solution' : 'View Detailed Solution & Explanation'}</span>
-                    </button>
-
-                    {isSolutionOpen && (
-                      <div className="mt-3 p-4 bg-blue-50/50 rounded-lg border border-blue-200 text-xs text-slate-800 leading-relaxed space-y-1">
-                        <span className="font-bold text-blue-900 block text-[11px] uppercase tracking-wider mb-1">
-                          Explanation & Derivation:
-                        </span>
-                        <MathRenderer
-                          text={q.solution_text}
-                          html={q.solution_html}
-                          images={q.images}
-                          questionCode={q.question_code}
-                        />
+                        )}
                       </div>
                     )}
                   </div>
-                ) : (
-                  <div className="text-[11px] text-slate-400 italic pt-1">
-                    No detailed explanation recorded in database.
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

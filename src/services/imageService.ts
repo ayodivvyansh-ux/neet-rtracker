@@ -22,9 +22,17 @@ export interface ImageResolutionResult {
  */
 export function getImageBasename(urlOrPath: string): string {
   if (!urlOrPath) return '';
-  const clean = urlOrPath.trim().split('?')[0].split('#')[0];
+  const clean = decodeURIComponent(urlOrPath).trim().split('?')[0].split('#')[0];
   const parts = clean.split('/');
   return parts[parts.length - 1] || clean;
+}
+
+/**
+ * Extracts base filename without file extension (e.g. "img_08857" from "img_08857.webp" or "img_08857.png").
+ */
+export function getImageStem(urlOrPath: string): string {
+  const base = getImageBasename(urlOrPath);
+  return base.replace(/\.[a-zA-Z0-9]+$/, '').toLowerCase();
 }
 
 /**
@@ -37,53 +45,40 @@ export function extractImageIdentifiers(
 
   const ids = new Set<string>();
 
-  if (typeof item === 'string') {
-    const trimmed = item.trim();
-    if (trimmed) {
-      ids.add(trimmed);
-      ids.add(getImageBasename(trimmed));
-      ids.add(trimmed.replace(/^\/+/, ''));
+  const addVariants = (val?: string | null) => {
+    if (!val || typeof val !== 'string') return;
+    const trimmed = val.trim();
+    if (!trimmed) return;
+    ids.add(trimmed);
+    ids.add(trimmed.toLowerCase());
+    const base = getImageBasename(trimmed);
+    if (base) {
+      ids.add(base);
+      ids.add(base.toLowerCase());
     }
+    const stem = getImageStem(trimmed);
+    if (stem) {
+      ids.add(stem);
+    }
+    const stripped = trimmed.replace(/^\/+/, '');
+    ids.add(stripped);
+    ids.add(stripped.toLowerCase());
+  };
+
+  if (typeof item === 'string') {
+    addVariants(item);
     return Array.from(ids);
   }
 
-  if (item.source_original_url) {
-    ids.add(item.source_original_url);
-    ids.add(getImageBasename(item.source_original_url));
-    ids.add(item.source_original_url.replace(/^\/+/, ''));
-  }
-
-  if (item.original_url) {
-    ids.add(item.original_url);
-    ids.add(getImageBasename(item.original_url));
-    ids.add(item.original_url.replace(/^\/+/, ''));
-  }
-
-  if (item.source_local_path) {
-    ids.add(item.source_local_path);
-    ids.add(getImageBasename(item.source_local_path));
-  }
-
-  if (item.local_path) {
-    ids.add(item.local_path);
-    ids.add(getImageBasename(item.local_path));
-  }
-
-  if (item.storage_path) {
-    ids.add(item.storage_path);
-    ids.add(getImageBasename(item.storage_path));
-    ids.add(item.storage_path.replace(/^\/+/, ''));
-  }
-
-  if (item.storagePath) {
-    ids.add(item.storagePath);
-    ids.add(getImageBasename(item.storagePath));
-    ids.add(item.storagePath.replace(/^\/+/, ''));
-  }
-
-  if (item.id) {
-    ids.add(item.id);
-  }
+  addVariants(item.source_original_url);
+  addVariants(item.original_url);
+  addVariants(item.source_local_path);
+  addVariants(item.local_path);
+  addVariants(item.storage_path);
+  addVariants(item.storagePath);
+  addVariants(item.caption);
+  addVariants(item.alt_text);
+  if (item.id) ids.add(item.id);
 
   return Array.from(ids).filter(Boolean);
 }
@@ -98,18 +93,23 @@ export function matchesImage(
   if (!targetUrlOrIdentifier || !imageItem) return false;
 
   const targetBasename = getImageBasename(targetUrlOrIdentifier).toLowerCase();
+  const targetStem = getImageStem(targetUrlOrIdentifier);
   const targetClean = targetUrlOrIdentifier.trim().replace(/^\/+/, '').toLowerCase();
 
   const itemIdentifiers = extractImageIdentifiers(imageItem);
   for (const id of itemIdentifiers) {
     const idLower = id.toLowerCase();
     const idBasename = getImageBasename(id).toLowerCase();
+    const idStem = getImageStem(id);
 
     if (
       targetClean === idLower ||
       targetBasename === idBasename ||
+      (targetStem && idStem && targetStem === idStem) ||
       targetClean.endsWith(idLower) ||
-      idLower.endsWith(targetClean)
+      idLower.endsWith(targetClean) ||
+      targetClean.includes(idBasename) ||
+      idLower.includes(targetBasename)
     ) {
       return true;
     }
@@ -150,7 +150,12 @@ export function detectEmbeddedImageIdentifiers(html?: string | null): Set<string
     const src = match[1];
     if (src && !src.startsWith('data:')) {
       result.add(src);
-      result.add(getImageBasename(src));
+      result.add(src.toLowerCase());
+      const base = getImageBasename(src);
+      result.add(base);
+      result.add(base.toLowerCase());
+      const stem = getImageStem(src);
+      if (stem) result.add(stem);
       result.add(src.replace(/^\/+/, ''));
     }
   }
@@ -159,9 +164,14 @@ export function detectEmbeddedImageIdentifiers(html?: string | null): Set<string
   const altRegex = /<img[^>]+alt=["']([^"']+)["'][^>]*>/gi;
   while ((match = altRegex.exec(html)) !== null) {
     const alt = match[1];
-    if (alt && (alt.endsWith('.png') || alt.endsWith('.jpg') || alt.endsWith('.jpeg') || alt.endsWith('.webp') || alt.endsWith('.svg'))) {
+    if (alt) {
       result.add(alt);
-      result.add(getImageBasename(alt));
+      result.add(alt.toLowerCase());
+      const base = getImageBasename(alt);
+      result.add(base);
+      result.add(base.toLowerCase());
+      const stem = getImageStem(alt);
+      if (stem) result.add(stem);
     }
   }
 
@@ -169,24 +179,42 @@ export function detectEmbeddedImageIdentifiers(html?: string | null): Set<string
 }
 
 /**
- * Filters question images to only standalone diagrams that are NOT already embedded in question_html.
+ * Filters question images to only standalone diagrams that are NOT already embedded in question_html or option_html.
  * Prevents duplicate rendering of the same visual asset.
  */
 export function getStandaloneQuestionImages(
   images?: QuestionBankImageItem[] | null,
-  questionHtml?: string | null
+  questionHtml?: string | null,
+  options?: any[] | null
 ): QuestionBankImageItem[] {
   if (!images || images.length === 0) return [];
-  if (!questionHtml) return images;
 
-  const embedded = detectEmbeddedImageIdentifiers(questionHtml);
+  const allHtmlParts = [questionHtml || ''];
+  if (options && Array.isArray(options)) {
+    for (const opt of options) {
+      if (typeof opt === 'string') {
+        allHtmlParts.push(opt);
+      } else if (opt && typeof opt === 'object') {
+        allHtmlParts.push(opt.option_html || opt.optionHtml || opt.option_text || opt.optionText || '');
+      }
+    }
+  }
+
+  const combinedHtml = allHtmlParts.join(' ');
+  const embedded = detectEmbeddedImageIdentifiers(combinedHtml);
   if (embedded.size === 0) return images;
 
   return images.filter((img) => {
     const ids = extractImageIdentifiers(img);
     for (const id of ids) {
-      if (embedded.has(id) || embedded.has(getImageBasename(id))) {
-        // Already embedded in HTML statement!
+      if (
+        embedded.has(id) ||
+        embedded.has(id.toLowerCase()) ||
+        embedded.has(getImageBasename(id)) ||
+        embedded.has(getImageBasename(id).toLowerCase()) ||
+        embedded.has(getImageStem(id))
+      ) {
+        // Already embedded in HTML statement or option!
         return false;
       }
     }
@@ -408,8 +436,28 @@ function escapeHtmlAttr(str: string): string {
 }
 
 /**
+ * Helper to construct a responsive, aspect-ratio-preserving <img> tag.
+ * - Width: min(100%, 680px) for statement diagrams, min(100%, 340px) for option diagrams
+ * - Height: auto (never distorted or stretched)
+ * - Max-height: 520px (statement) / 220px (option)
+ * - Object-fit: contain (no cropping)
+ */
+function buildResponsiveImgTag(
+  signedUrl: string,
+  altText: string,
+  isOption: boolean
+): string {
+  if (isOption) {
+    return `<img src="${signedUrl}" alt="${escapeHtmlAttr(altText || 'Option diagram')}" loading="lazy" decoding="async" class="object-contain my-1.5 rounded border border-slate-200 bg-white p-1 shadow-xs" style="max-width: min(100%, 340px); max-height: 220px; height: auto; object-fit: contain;" />`;
+  }
+
+  return `<img src="${signedUrl}" alt="${escapeHtmlAttr(altText || 'Question diagram')}" loading="lazy" decoding="async" class="w-auto max-w-full max-h-[520px] object-contain block mx-auto my-3 rounded-xl border border-slate-200 bg-white p-2 shadow-xs transition-transform hover:scale-[1.005]" style="width: min(100%, 680px); height: auto; max-height: 520px; object-fit: contain;" />`;
+}
+
+/**
  * Resolves all images embedded in an HTML string (such as question_html or option_html).
  * Replaces matching embedded <img src="..."> with the signed Supabase Storage URL.
+ * Supports multiple embedded images independently and preserves exact ordering.
  *
  * Temporarily logs debug info according to instructions:
  * { questionCode, embeddedImageSrc, matchedImageId, storageBucket, storagePath, isAvailable, createSignedUrlResult, finalRenderedSrc }
@@ -422,134 +470,138 @@ export async function transformEmbeddedHtmlImages(
 ): Promise<string> {
   if (!rawHtml || typeof rawHtml !== 'string') return '';
 
-  const imgTagRegex = /<img([^>]+)>/gi;
+  const imgTagRegex = /<img\b([^>]*?)>/gi;
   const srcAttrRegex = /\bsrc=["']([^"']+)["']/i;
   const altAttrRegex = /\balt=["']([^"']+)["']/i;
 
-  let hasMatches = false;
-  const promises: Promise<{ originalTag: string; replacementTag: string }>[] = [];
-
-  // Match all <img> tags
-  let match: RegExpExecArray | null;
-  while ((match = imgTagRegex.exec(rawHtml)) !== null) {
-    const fullImgTag = match[0];
+  const matches: { fullImgTag: string; src: string; alt: string; index: number }[] = [];
+  let m: RegExpExecArray | null;
+  while ((m = imgTagRegex.exec(rawHtml)) !== null) {
+    const fullImgTag = m[0];
     const srcMatch = srcAttrRegex.exec(fullImgTag);
-    if (!srcMatch) continue;
-
-    const originalSrc = srcMatch[1];
-    const altMatch = altAttrRegex.exec(fullImgTag);
-    const originalAlt = altMatch ? altMatch[1] : '';
-
-    hasMatches = true;
-
-    promises.push(
-      (async () => {
-        // If already signed or data URL, preserve as-is
-        if (originalSrc.includes('/storage/v1/object/sign/') || originalSrc.startsWith('data:')) {
-          console.log({
-            questionCode,
-            embeddedImageSrc: originalSrc,
-            matchedImageId: 'already_signed',
-            storageBucket: 'direct',
-            storagePath: 'direct',
-            isAvailable: true,
-            createSignedUrlResult: { signedUrl: originalSrc },
-            finalRenderedSrc: originalSrc
-          });
-          return { originalTag: fullImgTag, replacementTag: fullImgTag };
-        }
-
-        // 1. Try cache first
-        const cachedSigned = getCachedSignedUrl(originalSrc);
-        if (cachedSigned) {
-          console.log({
-            questionCode,
-            embeddedImageSrc: originalSrc,
-            matchedImageId: 'cached',
-            storageBucket: 'cached',
-            storagePath: 'cached',
-            isAvailable: true,
-            createSignedUrlResult: { signedUrl: cachedSigned },
-            finalRenderedSrc: cachedSigned
-          });
-          const cleanTag = fullImgTag
-            .replace(/\bsrc=["'][^"']+["']/i, `src="${cachedSigned}"`)
-            .replace(/\bclass=["'][^"']*["']/i, '')
-            .replace(/>$/, ' class="max-h-72 object-contain mx-auto my-2.5 rounded-lg border border-slate-200 bg-white p-1.5 shadow-xs" />');
-          return {
-            originalTag: fullImgTag,
-            replacementTag: cleanTag
-          };
-        }
-
-        // 2. Find matching image from metadata (using src, alt, and fallback if only 1 image exists)
-        let matched = findMatchingImage(originalSrc, questionImages);
-        if (!matched && originalAlt) {
-          matched = findMatchingImage(originalAlt, questionImages);
-        }
-        if (!matched && questionImages && questionImages.length === 1 && !isOption) {
-          // If exactly 1 image exists on question record and HTML has 1 image tag
-          matched = questionImages[0];
-        }
-
-        let res: ImageResolutionResult | null = null;
-        if (matched) {
-          res = await resolveQuestionImage(matched, questionCode);
-        }
-
-        console.log({
-          questionCode,
-          embeddedImageSrc: originalSrc,
-          matchedImageId: matched ? (matched.id || 'matched') : null,
-          storageBucket: matched?.storage_bucket || matched?.storageBucket || null,
-          storagePath: matched?.storage_path || matched?.storagePath || null,
-          isAvailable: matched ? (matched.is_available ?? matched.isAvailable ?? true) : false,
-          createSignedUrlResult: res?.rawResult || (res?.url ? { signedUrl: res.url } : res?.error || null),
-          finalRenderedSrc: res?.url || null
-        });
-
-        if (res?.url) {
-          const cleanTag = fullImgTag
-            .replace(/\bsrc=["'][^"']+["']/i, `src="${res.url}"`)
-            .replace(/\bclass=["'][^"']*["']/i, '')
-            .replace(/>$/, ' class="max-h-72 object-contain mx-auto my-2.5 rounded-lg border border-slate-200 bg-white p-1.5 shadow-xs" />');
-          return {
-            originalTag: fullImgTag,
-            replacementTag: cleanTag
-          };
-        }
-
-        // 3. Fallback: if no valid signed URL could be generated, show explicit unavailable state (DO NOT delete)
-        if (isOption) {
-          const fallbackOptionNotice = `<span class="inline-flex items-center space-x-1 text-[11px] text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded"><span>[Diagram unavailable]</span></span>`;
-          return { originalTag: fullImgTag, replacementTag: fallbackOptionNotice };
-        }
-
-        const fallbackNotice = `
-<div class="my-2.5 p-3 rounded-lg border border-amber-200 bg-amber-50/80 text-amber-800 text-xs flex items-center space-x-2">
-  <svg class="w-4 h-4 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-  </svg>
-  <span>Diagram unavailable (${escapeHtmlAttr(getImageBasename(originalSrc) || 'diagram')})</span>
-</div>`;
-
-        return { originalTag: fullImgTag, replacementTag: fallbackNotice };
-      })()
-    );
+    if (srcMatch) {
+      const altMatch = altAttrRegex.exec(fullImgTag);
+      matches.push({
+        fullImgTag,
+        src: srcMatch[1],
+        alt: altMatch ? altMatch[1] : '',
+        index: m.index
+      });
+    }
   }
 
-  if (!hasMatches || promises.length === 0) {
+  if (matches.length === 0) {
     return rawHtml;
   }
 
-  const replacements = await Promise.all(promises);
-  let transformed = rawHtml;
+  // Resolve each image independently in parallel
+  const resolvedReplacements = await Promise.all(
+    matches.map(async (item) => {
+      const originalSrc = item.src;
+      const originalAlt = item.alt;
 
-  for (const { originalTag, replacementTag } of replacements) {
-    transformed = transformed.replace(originalTag, replacementTag);
+      // If already a signed URL or data URL, preserve as-is with responsive tag
+      if (originalSrc.includes('/storage/v1/object/sign/') || originalSrc.startsWith('data:')) {
+        console.log({
+          questionCode,
+          embeddedImageSrc: originalSrc,
+          matchedImageId: 'already_signed',
+          storageBucket: 'direct',
+          storagePath: 'direct',
+          isAvailable: true,
+          createSignedUrlResult: { signedUrl: originalSrc },
+          finalRenderedSrc: originalSrc
+        });
+        const cleanTag = buildResponsiveImgTag(originalSrc, originalAlt, isOption);
+        return {
+          ...item,
+          replacementTag: cleanTag
+        };
+      }
+
+      // 1. Try cache first
+      const cachedSigned = getCachedSignedUrl(originalSrc);
+      if (cachedSigned) {
+        console.log({
+          questionCode,
+          embeddedImageSrc: originalSrc,
+          matchedImageId: 'cached',
+          storageBucket: 'cached',
+          storagePath: 'cached',
+          isAvailable: true,
+          createSignedUrlResult: { signedUrl: cachedSigned },
+          finalRenderedSrc: cachedSigned
+        });
+        const cleanTag = buildResponsiveImgTag(cachedSigned, originalAlt, isOption);
+        return {
+          ...item,
+          replacementTag: cleanTag
+        };
+      }
+
+      // 2. Find matching image from metadata (using src, alt, and fallback if only 1 image exists)
+      let matched = findMatchingImage(originalSrc, questionImages);
+      if (!matched && originalAlt) {
+        matched = findMatchingImage(originalAlt, questionImages);
+      }
+      if (!matched && questionImages && questionImages.length === 1 && !isOption) {
+        matched = questionImages[0];
+      }
+
+      let res: ImageResolutionResult | null = null;
+      if (matched) {
+        res = await resolveQuestionImage(matched, questionCode);
+      }
+
+      console.log({
+        questionCode,
+        embeddedImageSrc: originalSrc,
+        matchedImageId: matched ? (matched.id || 'matched') : null,
+        storageBucket: matched?.storage_bucket || matched?.storageBucket || null,
+        storagePath: matched?.storage_path || matched?.storagePath || null,
+        isAvailable: matched ? (matched.is_available ?? matched.isAvailable ?? true) : false,
+        createSignedUrlResult: res?.rawResult || (res?.url ? { signedUrl: res.url } : res?.error || null),
+        finalRenderedSrc: res?.url || null
+      });
+
+      if (res?.url) {
+        const cleanTag = buildResponsiveImgTag(res.url, originalAlt, isOption);
+        return {
+          ...item,
+          replacementTag: cleanTag
+        };
+      }
+
+      // 3. Fallback: if no valid signed URL could be generated, show explicit unavailable state for this specific image (DO NOT delete)
+      if (isOption) {
+        const fallbackOptionNotice = `<span class="inline-flex items-center space-x-1 text-[11px] text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded"><span>[Diagram unavailable]</span></span>`;
+        return {
+          ...item,
+          replacementTag: fallbackOptionNotice
+        };
+      }
+
+      const basename = getImageBasename(originalSrc) || getImageBasename(originalAlt) || 'diagram';
+      const fallbackNotice = `<div class="my-3 p-3.5 rounded-lg border border-amber-200 bg-amber-50/90 text-amber-800 text-xs flex items-center space-x-2.5 max-w-xl mx-auto shadow-xs"><svg class="w-4 h-4 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg><span>Diagram unavailable (${escapeHtmlAttr(basename)})</span></div>`;
+
+      return {
+        ...item,
+        replacementTag: fallbackNotice
+      };
+    })
+  );
+
+  // Replace from end to start by index to preserve exact positions
+  let result = rawHtml;
+  for (let i = resolvedReplacements.length - 1; i >= 0; i--) {
+    const item = resolvedReplacements[i];
+    result =
+      result.slice(0, item.index) +
+      item.replacementTag +
+      result.slice(item.index + item.fullImgTag.length);
   }
 
-  return transformed;
+  return result;
 }
 
 /**

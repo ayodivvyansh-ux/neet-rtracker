@@ -271,6 +271,8 @@ export const QuestionDetails: React.FC<QuestionDetailsProps> = ({
                 <MathRenderer
                   text={question.solution_text}
                   html={question.solution_html}
+                  images={question.images}
+                  questionCode={question.question_code}
                   className="text-slate-800"
                 />
               </div>
