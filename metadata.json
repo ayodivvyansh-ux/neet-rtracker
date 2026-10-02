@@ -1,0 +1,6 @@
+{
+  "name": "NEET UG CBT Exam Simulator",
+  "description": "Personal NTA-style NEET UG computer-based mock test platform with test generator, PDF question parser, authentic CBT interface, analytics, and wrong question PDF exporter.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}

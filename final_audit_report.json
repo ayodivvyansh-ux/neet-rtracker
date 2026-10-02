@@ -1,0 +1,987 @@
+{
+  "summary": {
+    "totalVisualsChecked": 77,
+    "safe": 55,
+    "quarantined": 22,
+    "missing": 0,
+    "unresolvable": 0,
+    "answerKeyLeaks": 1,
+    "neighbouringQuestionLeaks": 2,
+    "incompleteVisuals": 0
+  },
+  "logs": [
+    {
+      "questionId": "q_com_3_3",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Assignment 02  Physics By Manish Raj Sir(1).pdf",
+      "sourceQuestionNumber": 3,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_assignment_02_physics_by_manish_raj_sir_1/q_com_3_3/figure-01.jpg",
+      "hasVisual": false,
+      "validationStatus": "QUARANTINED",
+      "validationReasons": [
+        "MCQ_OPTIONS_DETECTED"
+      ],
+      "ocrSummary": "A block of mass M has a circular cut with a frictionless surface as shown. The block rests on the horizontal frictionless surface of a fixed table. Initially the right edge of the block is at x = 0, in a coordinate system fixed to the table. A point mass m is released from rest at the topmost point of the path as shown and it slides down. When the mass loses contact with the block, its position is x and the velocity is v. At that instant, which of the following options is/ are correct? [JEE Adv. 2017] A. ¤a. v = √[2gR/(1 + m/M)] B. ¤b. −mR/(M + m) C. ¤c. −√2 mR/(M + m) D. ¤d. −(m/M)√(2gR)"
+    },
+    {
+      "questionId": "q_com_4_1",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Assignment 01  Physics By Manish Raj Sir(1).pdf",
+      "sourceQuestionNumber": 1,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_assignment_01_physics_by_manish_raj_sir_1/q_com_4_1/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "Figure shows a square lamina with a disc of radius removed from it which is now placed symmetrically over upper right quarter. What is location of centre of mass of system relative to origin shown in figure. A. ¤a. (πL/12)(î+ĵ) B. ¤b. (πL/8)(î+ĵ) C. ¤c. (πL/4)(î+ĵ) D. ¤d. (πL/16)(î+ĵ)"
+    },
+    {
+      "questionId": "q_com_4_7",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Assignment 01  Physics By Manish Raj Sir(1).pdf",
+      "sourceQuestionNumber": 7,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_assignment_01_physics_by_manish_raj_sir_1/q_com_4_7/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "Infinite rods of uniform mass density and length 10L, L/2, L/4.... are placed one upon another upto infinite as shown in figure. Find the x-coordinate of centre of mass. A. ¤a. 0 B. ¤b. L/3 C. ¤c. L/2 D. ¤d. 2L/3"
+    },
+    {
+      "questionId": "q_com_4_8",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Assignment 01  Physics By Manish Raj Sir(1).pdf",
+      "sourceQuestionNumber": 8,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_assignment_01_physics_by_manish_raj_sir_1/q_com_4_8/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "Figure shows a disc of radius R = 20 cm with a portion of it removed symmetrically. The removed part is a disc of radius R/2. The removed part is now placed in contact with the larger disc as shown in figure. Disc has uniform mass distribution. With respect to origin at centre of larger disc find x-coordinate of centre of mass of system. A. ¤a. 20 cm B. ¤b. 10 cm C. ¤c. 15 cm D. ¤d. 5 cm"
+    },
+    {
+      "questionId": "q_com_4_3",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Assignment 01  Physics By Manish Raj Sir(1).pdf",
+      "sourceQuestionNumber": 3,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_assignment_01_physics_by_manish_raj_sir_1/q_com_4_3/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "A square plate of edge d and a circular disc of diameter d are placed touching each other at the midpoint of an edge of plate as shown. Then centre of mass of the combination will be (Assume same mass per unit area for the two plates): A. ¤a. left to the center of the disc 2d/(2+π) B. ¤b. right to the center of the disc 2d/(2+π) C. ¤c. right to the center of the disc 4d/(4+π) D. ¤d. left to the center of the disc 4d/(4+π)"
+    },
+    {
+      "questionId": "q_com_2_4",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Assignment 03  Physics By Manish Raj Sir(1).pdf",
+      "sourceQuestionNumber": 4,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_assignment_03_physics_by_manish_raj_sir_1/q_com_2_4/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "Two small particles of equal masses start moving in the opposite directions from a point A in a horizontal circular orbit. Their tangential velocities are v and 2v, respectively, as shown in the figure. Between collisions, the particles move with constant speeds. After making how many elastic collisions, other than that at A, these two particles will again reach the point A. A. ¤a. B. ¤b. C. ¤c. D. ¤d."
+    },
+    {
+      "questionId": "q_com_1_6",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Kattar NEET 2026  Physics By Manish Raj Sir_removed(1).pdf",
+      "sourceQuestionNumber": 6,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_kattar_neet_2026_physics_by_manish_raj_sir_removed_1/q_com_1_6/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "A semicircular ring and the semicircular disc are cut from a circular ring and disc, respectively, of radius R each as shown in the figure. If the masses of the semicircular ring and semicircular disc are equal. The ratio of distance of center of mass of ring from point O and distance of center of mass of disc from point O′ is: A. ¤a. 1 : 1 B. ¤b. 3 : 2 C. ¤c. 3 : 4 D. ¤d. 4 : 5"
+    },
+    {
+      "questionId": "q_com_1_22",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Kattar NEET 2026  Physics By Manish Raj Sir_removed(1).pdf",
+      "sourceQuestionNumber": 22,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_kattar_neet_2026_physics_by_manish_raj_sir_removed_1/q_com_1_22/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "From a uniform square plate, one-fourth part is removed as shown. The centre of mass of remaining part will lie on the line: (O is the center of original plate) A. ¤a. OC B. ¤b. OA C. ¤c. OB D. ¤d. OD"
+    },
+    {
+      "questionId": "q_com_1_24",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Kattar NEET 2026  Physics By Manish Raj Sir_removed(1).pdf",
+      "sourceQuestionNumber": 24,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_kattar_neet_2026_physics_by_manish_raj_sir_removed_1/q_com_1_24/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "In the figure shown, a small ball hits obliquely on a smooth and horizontal surface with velocity u whose x and y components are indicated. If the coefficient of restitution is , then its x and y components of velocity v and v just after x y collision are respectively. A. ¤a. 4 m/s, 1 m/s B. ¤b. 2 m/s, 1 m/s C. ¤c. 2 m/s, 2 m/s D. ¤d. 4 m/s, 2 m/s"
+    },
+    {
+      "questionId": "q_com_1_32",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Kattar NEET 2026  Physics By Manish Raj Sir_removed(1).pdf",
+      "sourceQuestionNumber": 32,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_kattar_neet_2026_physics_by_manish_raj_sir_removed_1/q_com_1_32/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "The position vector of the centre of mass r of cm an asymmetric uniform composite system of negligible area of cross-section as shown in figure is: = 13 Lˆx + 5 Lˆy A. ¤a. (13L/8)î + (5L/8)ĵ B. ¤b. (5L/8)î + (3L/8)ĵ C. ¤c. (3L/8)î + (11L/8)ĵ D. ¤d. (5L/8)î + (13L/8)ĵ"
+    },
+    {
+      "questionId": "q_com_1_39",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Kattar NEET 2026  Physics By Manish Raj Sir_removed(1).pdf",
+      "sourceQuestionNumber": 39,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_kattar_neet_2026_physics_by_manish_raj_sir_removed_1/q_com_1_39/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "Look at the drawing given in the figure, which has been drawn with ink of uniform line- thickness. The mass of ink used to draw each of the two inner circles, and each of the two line segments is m. The mass of the ink used to draw the outer circle is 6m. The coordinates of the centres of the different parts are : outer circle (0,0), left inner circle (−a,a), right inner circle (a,a), vertical line (0,0) and horizontal line (0,−a). The y- coordinate of the centre of mass of the ink in this drawing is a a A. ¤a. a/10 B. ¤b. a/8 C. ¤c. a/12 D. ¤d. a/3"
+    },
+    {
+      "questionId": "q_com_1_45",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Kattar NEET 2026  Physics By Manish Raj Sir_removed(1).pdf",
+      "sourceQuestionNumber": 45,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_kattar_neet_2026_physics_by_manish_raj_sir_removed_1/q_com_1_45/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "A circular plate of uniform thickness has a diameter 56 cm. A circular portion of diameter 42 cm is removed from one edge as shown in the figure. The centre of mass of the remaining portion from the centre of plate will be: A. ¤a. 5 cm B. ¤b. 7 cm C. ¤c. 9 cm D. ¤d. 11 cm"
+    },
+    {
+      "questionId": "q_com_1_16",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Kattar NEET 2026  Physics By Manish Raj Sir_removed(1).pdf",
+      "sourceQuestionNumber": 116,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "",
+      "hasVisual": false,
+      "validationStatus": "QUARANTINED",
+      "validationReasons": [
+        "LOW_CONFIDENCE",
+        "NEIGHBOURING_QUESTION_DETECTED"
+      ],
+      "ocrSummary": "Manually Quarantined overriding audit pipeline."
+    },
+    {
+      "questionId": "q_com_1_2",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Kattar NEET 2026  Physics By Manish Raj Sir_removed(1).pdf",
+      "sourceQuestionNumber": 2,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_kattar_neet_2026_physics_by_manish_raj_sir_removed_1/q_com_1_2/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "Two identical thin uniform rods of length L each are joined to form T shape as shown in the figure. The distance of center of mass of resultant shape from point D is: (Neglect effect of thickness) A. ¤a. 0 B. ¤b. L/4 C. ¤c. 3L/4 D. ¤d. L"
+    },
+    {
+      "questionId": "q_com_1_28",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Kattar NEET 2026  Physics By Manish Raj Sir_removed(1).pdf",
+      "sourceQuestionNumber": 28,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_kattar_neet_2026_physics_by_manish_raj_sir_removed_1/q_com_1_28/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "A particle of mass m moving with a velocity u makes an elastic one dimensional collision with a stationary particle of mass m establishing a contact with it for extremely small time T. Their force of contact increases from zero to F linearly T , in time remains constant for a further time T and decreases linearly from F to zero in 2 0 T further time as shown. The magnitude of F 4 0 is; mu 2mu A. ¤a. μ/T B. ¤b. 2μ/T C. ¤c. 4μ/(3T) D. ¤d. 3μ/(4T)"
+    },
+    {
+      "questionId": "q_com_1_40",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Kattar NEET 2026  Physics By Manish Raj Sir_removed(1).pdf",
+      "sourceQuestionNumber": 40,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_kattar_neet_2026_physics_by_manish_raj_sir_removed_1/q_com_1_40/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "A uniform rectangular thin sheet ABCD of mass M has length a and breadth b, as shown in the figure, If the shaded portion HBGO is cut-off, the coordinates of the centre of mass of the remaining portion will be: ( 2a , 2b ) ( 5a , 5b ) A. ¤a. (2a/3, 2b/3) B. ¤b. (5a/12, 5b/12) C. ¤c. (3a/4, 3b/4) D. ¤d. (5a/3, 5b/3)"
+    },
+    {
+      "questionId": "q_com_1_43",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Kattar NEET 2026  Physics By Manish Raj Sir_removed(1).pdf",
+      "sourceQuestionNumber": 43,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_kattar_neet_2026_physics_by_manish_raj_sir_removed_1/q_com_1_43/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "In the figure shown, the small prism of mass M slides down on the bigger prism of mass 5M from top of the bigger prism to the bottom of the bigger prism. By what distance does the combination move to the left if the bigger prism initially rests on a frictionless floor. L 4L A. ¤a. L/5 B. ¤b. 4L/5 C. ¤c. 2L/3 D. ¤d. L/6"
+    },
+    {
+      "questionId": "q_com_1_31",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Kattar NEET 2026  Physics By Manish Raj Sir_removed(1).pdf",
+      "sourceQuestionNumber": 31,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_kattar_neet_2026_physics_by_manish_raj_sir_removed_1/q_com_1_31/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "From a circular disc of radius R, a square is cut out with a radius as its diagonal. The center of mass of remaining part is at a distance (from the centre): T with PW Books APP R A. ¤a. R/(4π−2) B. ¤b. R/(2π) C. ¤c. R/(π−2) D. ¤d. R/(2π−2)"
+    },
+    {
+      "questionId": "q_com_1_46",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Kattar NEET 2026  Physics By Manish Raj Sir_removed(1).pdf",
+      "sourceQuestionNumber": 46,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_kattar_neet_2026_physics_by_manish_raj_sir_removed_1/q_com_1_46/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "Two equal rods joined at one end are kept on a smooth surface as shown and released. Trajectory of centre of mass of both rods is A. ¤a. parabola B. ¤b. straight vertical line C. ¤c. straight inclined line D. ¤d. straight horizontal line"
+    },
+    {
+      "questionId": "q_com_1_49",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Kattar NEET 2026  Physics By Manish Raj Sir_removed(1).pdf",
+      "sourceQuestionNumber": 49,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_kattar_neet_2026_physics_by_manish_raj_sir_removed_1/q_com_1_49/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "Four bodies of equal mass start moving with same speed as shown in the figure. In which of the following combination the centre of mass will remain at origin: A. ¤a. c and b B. ¤b. a and d C. ¤c. a and c D. ¤d. b and c"
+    },
+    {
+      "questionId": "q_com_1_58",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Kattar NEET 2026  Physics By Manish Raj Sir_removed(1).pdf",
+      "sourceQuestionNumber": 58,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_kattar_neet_2026_physics_by_manish_raj_sir_removed_1/q_com_1_58/figure-01.jpg",
+      "hasVisual": false,
+      "validationStatus": "QUARANTINED",
+      "validationReasons": [
+        "MCQ_OPTIONS_DETECTED"
+      ],
+      "ocrSummary": "Which of the following points is the likely position of the centre of mass of the system shown in Figure? A. ¤a. A B. ¤b. B C. ¤c. C D. ¤d. D"
+    },
+    {
+      "questionId": "q_com_1_50",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Kattar NEET 2026  Physics By Manish Raj Sir_removed(1).pdf",
+      "sourceQuestionNumber": 50,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_kattar_neet_2026_physics_by_manish_raj_sir_removed_1/q_com_1_50/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "The distance of the centre of mass of the T- shaped plate from O is: A. ¤a. 7 m B. ¤b. 2.7 m C. ¤c. 4 m D. ¤d. 1 m"
+    },
+    {
+      "questionId": "q_com_1_55",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Kattar NEET 2026  Physics By Manish Raj Sir_removed(1).pdf",
+      "sourceQuestionNumber": 55,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_kattar_neet_2026_physics_by_manish_raj_sir_removed_1/q_com_1_55/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "If the system is released, then the acceleration of the centre of mass of the system: g g A. ¤a. g/4 B. ¤b. g/2 C. ¤c. g D. ¤d. 2g"
+    },
+    {
+      "questionId": "q_com_3_12",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Assignment 02  Physics By Manish Raj Sir(1).pdf",
+      "sourceQuestionNumber": 12,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_assignment_02_physics_by_manish_raj_sir_1/q_com_3_12/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "A small block A of mass m is given a velocity v in horizontal direction as shown. The bigger block B is initially at rest. The curved surface of the block B becomes vertical at the top point. If M = 4m, what should be the minimum value of v so that the block A climbs up to the top on B? All surfaces are smooth (g = 10 m/s2) A. ¤a. 20 m/s B. ¤b. 10 m/s C. ¤c. 9 m/s D. ¤d. 2 m/s"
+    },
+    {
+      "questionId": "q_com_2_13",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Assignment 03  Physics By Manish Raj Sir(1).pdf",
+      "sourceQuestionNumber": 13,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_assignment_03_physics_by_manish_raj_sir_1/q_com_2_13/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "As shown below, bob A of a pendulum having massless string of length R is released from 60° to the vertical. It hits another bob B of half the mass that is at rest on a friction less table in the center. Assuming elastic collision, the magnitude of the velocity of bob A after the collision will be (take g as acceleration due to gravity.) [29 Jan, 2025 (Shift-I)] A. ¤a. (2/3)√(Rg) B. ¤b. (1/3)√(Rg) C. ¤c. (4/3)√(Rg) D. ¤d. √(Rg)"
+    },
+    {
+      "questionId": "q_com_3_21",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Assignment 02  Physics By Manish Raj Sir(1).pdf",
+      "sourceQuestionNumber": 21,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_assignment_02_physics_by_manish_raj_sir_1/q_com_3_21/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "A 20 g bullet pierces through a plate of mass M = 1 kg and then comes to rest inside a second plate of mass M = 3 kg as shown in the figure. It is found that the two plates, initially at rest, now move with equal velocities. Find the percentage loss in the initial velocity of the bullet when it is between M and M. Neglect any loss of material of the plates due to the action of bullet. A. ¤a. 50% B. ¤b. 25% C. ¤c. 100% D. ¤d. 75%"
+    },
+    {
+      "questionId": "q_com_3_25",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Assignment 02  Physics By Manish Raj Sir(1).pdf",
+      "sourceQuestionNumber": 25,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_assignment_02_physics_by_manish_raj_sir_1/q_com_3_25/figure-01.jpg",
+      "hasVisual": false,
+      "validationStatus": "QUARANTINED",
+      "validationReasons": [
+        "MCQ_OPTIONS_DETECTED"
+      ],
+      "ocrSummary": "Three different projectiles, each with the same mass, are fired with speed v at a wall. In case A, the projectile bounces straight back with speed v. In case B, the projectile sticks to the wall. In case C, the projectile crashes through the wall and emerges with half its original speed. These three cases are shown here. Place the impulse exerted by the wall on the projectile in each of these three cases in the correct order. A. ¤a. A > C > B B. ¤b. C > B > A C. ¤c. B > A > C D. ¤d. A > B > C"
+    },
+    {
+      "questionId": "q_com_3_26",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Assignment 02  Physics By Manish Raj Sir(1).pdf",
+      "sourceQuestionNumber": 26,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_assignment_02_physics_by_manish_raj_sir_1/q_com_3_26/figure-01.png",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "A particle collides elastically with two moving walls one by one as shown on a horizontal plane. Find the final speed of the particle after two collisions: A. ¤a. 11 m/s B. ¤b. 19 m/s C. ¤c. 21 m/s D. ¤d. 5 m/s"
+    },
+    {
+      "questionId": "q_com_4_12",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Assignment 01  Physics By Manish Raj Sir(1).pdf",
+      "sourceQuestionNumber": 12,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_assignment_01_physics_by_manish_raj_sir_1/q_com_4_12/figure-01.jpg",
+      "hasVisual": false,
+      "validationStatus": "QUARANTINED",
+      "validationReasons": [
+        "MCQ_OPTIONS_DETECTED"
+      ],
+      "ocrSummary": "To form a jeep, two squares of side length 10 cm & 20 cm and two circles of perimeter 15 cm each are connected as shown. The centre of bigger square is at origin and x-y axes are as shown. The x coordinate of centre of mass of this model is: A. ¤a. x = –5 cm B. ¤b. x = –9 cm C. ¤c. x = –3 cm D. ¤d. x = 2 cm"
+    },
+    {
+      "questionId": "q_com_4_16",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Assignment 01  Physics By Manish Raj Sir(1).pdf",
+      "sourceQuestionNumber": 16,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_assignment_01_physics_by_manish_raj_sir_1/q_com_4_16/figure-01.jpg",
+      "hasVisual": false,
+      "validationStatus": "QUARANTINED",
+      "validationReasons": [
+        "MCQ_OPTIONS_DETECTED"
+      ],
+      "ocrSummary": "A thick uniform wire is bent into the shape of the letter “U” as shown. Which point indicates the location of the center of mass of this wire? A is the midpoint of the line joining mid points of two parallel sides of ‘U’ shaped wire. A. ¤a. A B. ¤b. B C. ¤c. C D. ¤d. D"
+    },
+    {
+      "questionId": "q_com_4_19",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Assignment 01  Physics By Manish Raj Sir(1).pdf",
+      "sourceQuestionNumber": 19,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_assignment_01_physics_by_manish_raj_sir_1/q_com_4_19/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "An infinite number of bricks are placed one over the other as shown in the figure. Each succeeding brick having half the length and breadth of its preceding brick and the mass of each succeeding bricks being 1/4th of the preceding one, take ‘O’ as the origin, the x-coordinate of centre of mass of the system of bricks is A. ¤a. −a/7 B. ¤b. 3a/7 C. ¤c. −3a/7 D. ¤d. −2a/7"
+    },
+    {
+      "questionId": "q_com_4_9",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Assignment 01  Physics By Manish Raj Sir(1).pdf",
+      "sourceQuestionNumber": 9,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_assignment_01_physics_by_manish_raj_sir_1/q_com_4_9/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "From a circular disc of radius R, a triangular portion is cut (see figure). The distance of the centre of mass of the remainder from the centre of the disc is A. ¤a. 4R/[3(π−2)] B. ¤b. 2R/[3(π−2)] C. ¤c. 5R/[7(π−2)] D. ¤d. R/[3(π−1)]"
+    },
+    {
+      "questionId": "q_com_4_24",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Assignment 01  Physics By Manish Raj Sir(1).pdf",
+      "sourceQuestionNumber": 24,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_assignment_01_physics_by_manish_raj_sir_1/q_com_4_24/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "Find the magnitude of acceleration of centre of mass of two blocks as shown in figure. Neglect friction everywhere. (g = 10 ms–2) A. ¤a. 1 ms–2 B. ¤b. 1/2 ms–2 C. ¤c. 2 ms–2 D. ¤d. Zero"
+    },
+    {
+      "questionId": "q_com_3_16",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Assignment 02  Physics By Manish Raj Sir(1).pdf",
+      "sourceQuestionNumber": 16,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_assignment_02_physics_by_manish_raj_sir_1/q_com_3_16/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "A particle strikes the surface and rebounds as shown in the figure. Calculate the coefficient of restitution ‘e’ A. ¤a. 8/9 B. ¤b. 9/25 C. ¤c. 9/16 D. ¤d. 12/16"
+    },
+    {
+      "questionId": "q_com_1_12",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Kattar NEET 2026  Physics By Manish Raj Sir_removed(1).pdf",
+      "sourceQuestionNumber": 12,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_kattar_neet_2026_physics_by_manish_raj_sir_removed_1/q_com_1_12/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "A uniform solid cone of height 40 cm is shown in figure. The distance of center of mass of the cone from point B (center of the base) is: A. ¤a. 20 cm B. ¤b. 10/3 cm C. ¤c. 20/3 cm D. ¤d. 10 cm"
+    },
+    {
+      "questionId": "q_com_1_29",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Kattar NEET 2026  Physics By Manish Raj Sir_removed(1).pdf",
+      "sourceQuestionNumber": 29,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_kattar_neet_2026_physics_by_manish_raj_sir_removed_1/q_com_1_29/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "If thin uniform wire of length l is bent into semicircle as shown below then distance of its COM from center of semicircle is: 2l 2l A. ¤a. 2ℓ/π B. ¤b. 2ℓ/π² C. ¤c. 4ℓ/(3π) D. ¤d. 4ℓ/(3π²)"
+    },
+    {
+      "questionId": "q_com_1_44",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Kattar NEET 2026  Physics By Manish Raj Sir_removed(1).pdf",
+      "sourceQuestionNumber": 44,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_kattar_neet_2026_physics_by_manish_raj_sir_removed_1/q_com_1_44/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "Four particles A, B, C and D with masses m = m, A m = 2m, m = 3m and m = 4m are at the corners B C D of a square. They have accelerations of equal magnitude with directions as shown. The acceleration of the centre of mass of the particles is: A. ¤a. (a/5)(î−ĵ) B. ¤b. Zero C. ¤c. (a/5)(î×ĵ) D. ¤d. a(î+ĵ)"
+    },
+    {
+      "questionId": "q_com_1_35",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Kattar NEET 2026  Physics By Manish Raj Sir_removed(1).pdf",
+      "sourceQuestionNumber": 35,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_kattar_neet_2026_physics_by_manish_raj_sir_removed_1/q_com_1_35/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "Find the x coordinate of the centre of mass of the identical bricks shown in figure : (Each brick has length ℓ) 24 25 A. ¤a. 25 ℓ B. ¤b. 24 ℓ 15 16 C. ¤c. ℓ D. ¤d. ℓ 16 15"
+    },
+    {
+      "questionId": "q_com_1_38",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Kattar NEET 2026  Physics By Manish Raj Sir_removed(1).pdf",
+      "sourceQuestionNumber": 38,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_kattar_neet_2026_physics_by_manish_raj_sir_removed_1/q_com_1_38/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "In the given figure four rods AB, BC, CD and DA have mass m, 2m, 3m and 4m respectively. In which of the regions (numberd 1, 2, 3, 4) the T with PW Books APP A. ¤a. 1 B. ¤b. 2 C. ¤c. 3 D. ¤d. 4"
+    },
+    {
+      "questionId": "q_com_a02_022",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Assignment 02  Physics By Manish Raj Sir(1).pdf",
+      "sourceQuestionNumber": 22,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_assignment_02_physics_by_manish_raj_sir_1/q_com_a02_022/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "In the figure shown, the small prism of mass M slides down on the bigger prism of mass 5M from top of the bigger prism to the bottom of the bigger prism. By what distance does the combination move to the left if the bigger prism initially rests on a frictionless floor? A. ¤a. L/5 B. ¤b. 4L/5 C. ¤c. 2L/3 D. ¤d. L/6"
+    },
+    {
+      "questionId": "q_com_4_15",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Assignment 01  Physics By Manish Raj Sir(1).pdf",
+      "sourceQuestionNumber": 15,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_assignment_01_physics_by_manish_raj_sir_1/q_com_4_15/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "Five uniform circular plates, each of diameter D and mass m are laid out in a pattern shown. Using the origin shown, find the y-coordinate of the centre of mass of the five-plate system. A. ¤a. 2D/5 B. ¤b. 4D/5 C. ¤c. D/3 D. ¤d. D/5"
+    },
+    {
+      "questionId": "q_com_a01_014",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Assignment 01  Physics By Manish Raj Sir(1).pdf",
+      "sourceQuestionNumber": 14,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_assignment_01_physics_by_manish_raj_sir_1/q_com_a01_014/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "In the given figure four rods AB, BC, CD and DA have mass m, 2m, 3m and 4m respectively. In which of the regions (numbered 1, 2, 3, 4) the centre of mass of system lies? A. ¤a. 1 B. ¤b. 2 C. ¤c. 3 D. ¤d. 4"
+    },
+    {
+      "questionId": "q_com_4_20",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Assignment 01  Physics By Manish Raj Sir(1).pdf",
+      "sourceQuestionNumber": 20,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_assignment_01_physics_by_manish_raj_sir_1/q_com_4_20/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "A lamina is made by removing a small disc of diameter 2R from a bigger disc of uniform mass density and radius 2R, as shown in the figure. A second similar disc is made but instead of hole a disc of double the density as of first is filled in the hole. Centre of mass is calculated in both the cases and was found at a distance r1 and r2 from centre O respectively. Find the ratio r2/r1. A. ¤a. 3 B. ¤b. 4 C. ¤c. 5 D. ¤d. 1"
+    },
+    {
+      "questionId": "q_com_4_21",
+      "subject": "Physics",
+      "sourcePdf": "Centre of mass and System of Particles  Assignment 01  Physics By Manish Raj Sir(1).pdf",
+      "sourceQuestionNumber": 21,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Physics/center_of_mass/figures/centre_of_mass_and_system_of_particles_assignment_01_physics_by_manish_raj_sir_1/q_com_4_21/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "Six rods of the same mass m and length l are arrange as shown in figure. Calculate the coordinate of the centre of mass of the system. A. ¤a. (ℓ/2, 7ℓ/6) B. ¤b. (ℓ/3, ℓ) C. ¤c. (ℓ/2, 4ℓ/3) D. ¤d. (ℓ/2, 5ℓ/3)"
+    },
+    {
+      "questionId": "q_morph_kattar_020",
+      "subject": "Botany",
+      "sourcePdf": "Morphology of Flowering Plants  Kattar NEET 2026  Botany By Rupesh Chaudhary Sir.pdf",
+      "sourceQuestionNumber": 20,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Botany/morphology_of_flowering_plants/figures/morphology_of_flowering_plants_kattar_neet_2026_botany_by_rupesh_chaudhary_sir/q_morph_kattar_020/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "Match List-I with List-II:\nList-I (Placentation):\n(A) Free central\n(B) Basal\n(C) Axile\n(D) Marginal\nList-II (Example):\n(I) Tomato\n(II) Bean\n(III) Dianthus\n(IV) Sunflower\nChoose the correct answer from the options given below: A. ¤a. A-IV, B-II, C-I, D-III B. ¤b. A-III, B-IV, C-I, D-II C. ¤c. A-III, B-IV, C-II, D-I D. ¤d. A-III, B-II, C-I, D-IV"
+    },
+    {
+      "questionId": "q_morph_practice_042",
+      "subject": "Botany",
+      "sourcePdf": "Morphology of Flowering Plants Practice Sheet.pdf",
+      "sourceQuestionNumber": 42,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Botany/morphology_of_flowering_plants/figures/morphology_of_flowering_plants_practice_sheet/q_morph_practice_042/figure-01.jpg",
+      "hasVisual": false,
+      "validationStatus": "QUARANTINED",
+      "validationReasons": [
+        "MCQ_OPTIONS_DETECTED"
+      ],
+      "ocrSummary": "The given floral diagram belongs to the family:\n[DIAGRAM: Floral diagram showing Solanaceae] A. ¤a. Malvaceae. B. ¤b. Solanaceae. C. ¤c. Leguminoceae. D. ¤d. Graminae."
+    },
+    {
+      "questionId": "q_morph_practice_039",
+      "subject": "Botany",
+      "sourcePdf": "Morphology of Flowering Plants Practice Sheet.pdf",
+      "sourceQuestionNumber": 39,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Botany/morphology_of_flowering_plants/figures/morphology_of_flowering_plants_practice_sheet/q_morph_practice_039/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "Match List-I with List-II.\nList-I:\n(A) Basal placentation\n(B) Axile placentation\n(C) Parietal placentation\n(D) Free central placentation\nList-II:\n(I) Primrose\n(II) Argemone\n(III) Lemon\n(IV) Marigold\nChoose the correct answer from the options given below: A. ¤a. A-II, B-I, C-III, D-IV B. ¤b. A-I, B-II, C-III, D-IV C. ¤c. A-II, B-III, C-I, D-IV D. ¤d. A-IV, B-III, C-II, D-I"
+    },
+    {
+      "questionId": "q_morph_kattar_022",
+      "subject": "Botany",
+      "sourcePdf": "Morphology of Flowering Plants  Kattar NEET 2026  Botany By Rupesh Chaudhary Sir.pdf",
+      "sourceQuestionNumber": 22,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Botany/morphology_of_flowering_plants/figures/morphology_of_flowering_plants_kattar_neet_2026_botany_by_rupesh_chaudhary_sir/q_morph_kattar_022/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "Select the correct floral formula of Cruciferae family. A. ¤a. $Br \\% \\oint_{+} P_{2} A_{3} \\underline{G}_{1}$ B. ¤b. $\\% K_{(5)} C_{1+2+(2)} A$ C. ¤c. $\\oplus \\underset{+}{\\bigcirc^{\\top}} K_{2+2} C_{4} A_{2+4} \\underline{G}_{(2)}$ D. ¤d. $Br \\oplus K_{(5)} C_{(5)} A_{5} \\underline{G}_{(2)}$"
+    },
+    {
+      "questionId": "q_morph_kattar_024",
+      "subject": "Botany",
+      "sourcePdf": "Morphology of Flowering Plants  Kattar NEET 2026  Botany By Rupesh Chaudhary Sir.pdf",
+      "sourceQuestionNumber": 24,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Botany/morphology_of_flowering_plants/figures/morphology_of_flowering_plants_kattar_neet_2026_botany_by_rupesh_chaudhary_sir/q_morph_kattar_024/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "Match List-I with List-II:\nList-I:\n(A) Coleorhiza\n(B) Micropyle\n(C) Tegmen\n(D) Hilum\nList-II:\n(I) Sheath enclosing the radicle\n(II) Scar on the seed coat\n(III) Inner layer of seed coat\n(IV) Small pore above the scar on seed coat\nChoose the correct answer from the options given below: A. ¤a. A-I, B-IV, C-II, D-III B. ¤b. A-III, B-I, C-IV, D-II C. ¤c. A-III, B-IV, C-II, D-I D. ¤d. A-IV, B-II, C-I, D-III"
+    },
+    {
+      "questionId": "q_morph_practice_013",
+      "subject": "Botany",
+      "sourcePdf": "Morphology of Flowering Plants Practice Sheet.pdf",
+      "sourceQuestionNumber": 13,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Botany/morphology_of_flowering_plants/figures/morphology_of_flowering_plants_practice_sheet/q_morph_practice_013/figure-01.jpg",
+      "hasVisual": false,
+      "validationStatus": "QUARANTINED",
+      "validationReasons": [
+        "MCQ_OPTIONS_DETECTED"
+      ],
+      "ocrSummary": "What is true for the floral diagram given below?\n[DIAGRAM: Floral diagram showing Solanaceae floral arrangement] A. ¤a. Flower belongs to malvaceae family B. ¤b. Ovary is multilocular C. ¤c. It is found in the leguminoceae family D. ¤d. The flower is bracteate"
+    },
+    {
+      "questionId": "q_morph_pyq_039",
+      "subject": "Botany",
+      "sourcePdf": "Morphology of Flowering PYQs.pdf",
+      "sourceQuestionNumber": 39,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Botany/morphology_of_flowering_plants/figures/morphology_of_flowering_pyqs/q_morph_pyq_039/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "Which of the following is the correct floral formula of Liliaceae? (2020-Covid) A. ¤a. \\% K_{(5)} C_{1+2+(2)} A_{(9)+1} \\underline{G}_{1} B. ¤b. Br \\oplus \\underset{+}{\\bigcirc^{\\top}} P_{(3+3)} A_{3+3} \\underline{G}_{(3)} C. ¤c. \\oplus \\underset{+}{\\bigcirc^{\\top}} K_{(5)} \\overbrace{C_{(5)} A_{5}} \\underline{G}_{(2)} D. ¤d. \\% C_{1+2+(2)} A_{(9)+1} \\underline{G}_{1}"
+    },
+    {
+      "questionId": "q_morph_kattar_013",
+      "subject": "Botany",
+      "sourcePdf": "Morphology of Flowering Plants  Kattar NEET 2026  Botany By Rupesh Chaudhary Sir.pdf",
+      "sourceQuestionNumber": 13,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Botany/morphology_of_flowering_plants/figures/morphology_of_flowering_plants_kattar_neet_2026_botany_by_rupesh_chaudhary_sir/q_morph_kattar_013/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "Match List-I with List-II:\nList-I:\n(A) Grass family\n(B) Compositae\n(C) Some leguminous plants\n(D) Mustard family\nList-II:\n(I) False septum in locule of ovary\n(II) Leaf base expands into a sheath covering the stem partially or wholly\n(III) Pulvinus\n(IV) Basal placentation\nChoose the correct answer from the options given below: A. ¤a. A-II, B-IV, C-III, D-I B. ¤b. A-III, B-II, C-I, D-IV C. ¤c. A-IV, B-I, C-II, D-III D. ¤d. A-I, B-III, C-IV, D-II"
+    },
+    {
+      "questionId": "q_morph_kattar_018",
+      "subject": "Botany",
+      "sourcePdf": "Morphology of Flowering Plants  Kattar NEET 2026  Botany By Rupesh Chaudhary Sir.pdf",
+      "sourceQuestionNumber": 18,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Botany/morphology_of_flowering_plants/figures/morphology_of_flowering_plants_kattar_neet_2026_botany_by_rupesh_chaudhary_sir/q_morph_kattar_018/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "Match List-I with List-II:\nList-I (Plant):\n(A) Calotropis\n(B) Bean\n(C) Lady's finger\n(D) Gulmohur\nList-II (Type of Aestivation / Description):\n(I) Margins of appendages overlap one another but not in a specific direction\n(II) Appendages just touch one another at the margins, no overlapping\n(III) One margin of the appendage overlaps that of the next one and so on\n(IV) Standard overlaps the two lateral wings, which in turn overlap the two keels\nChoose the correct answer from the options given below: A. ¤a. A-II, B-IV, C-III, D-I B. ¤b. A-I, B-III, C-IV, D-II C. ¤c. A-III, B-I, C-II, D-IV D. ¤d. A-II, B-IV, C-I, D-III"
+    },
+    {
+      "questionId": "q_morph_kattar_041",
+      "subject": "Botany",
+      "sourcePdf": "Morphology of Flowering Plants  Kattar NEET 2026  Botany By Rupesh Chaudhary Sir.pdf",
+      "sourceQuestionNumber": 41,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "",
+      "hasVisual": false,
+      "validationStatus": "QUARANTINED",
+      "validationReasons": [
+        "MCQ_OPTIONS_DETECTED",
+        "LOW_CONFIDENCE"
+      ],
+      "ocrSummary": "Manually Quarantined overriding audit pipeline."
+    },
+    {
+      "questionId": "q_morph_kattar_046",
+      "subject": "Botany",
+      "sourcePdf": "Morphology of Flowering Plants  Kattar NEET 2026  Botany By Rupesh Chaudhary Sir.pdf",
+      "sourceQuestionNumber": 46,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Botany/morphology_of_flowering_plants/figures/morphology_of_flowering_plants_kattar_neet_2026_botany_by_rupesh_chaudhary_sir/q_morph_kattar_046/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "Match List I with List II.\nList-I:\n(A) Difference in length of filaments in stamens within a flower\n(B) Calyx and corolla are not distinct\n(C) Stamens united into one bundle\n(D) Stamens attached to petals\nList-II:\n(I) Lily\n(II) China rose\n(III) Brinjal\n(IV) Salvia\nChoose the most appropriate answer from the options given below: A. ¤a. A-IV, B-I, C-II, D-III B. ¤b. A-II, B-III, C-IV, D-I C. ¤c. A-III, B-IV, C-I, D-II D. ¤d. A-I, B-III, C-II, D-IV"
+    },
+    {
+      "questionId": "q_morph_kattar_051",
+      "subject": "Botany",
+      "sourcePdf": "Morphology of Flowering Plants  Kattar NEET 2026  Botany By Rupesh Chaudhary Sir.pdf",
+      "sourceQuestionNumber": 51,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Botany/morphology_of_flowering_plants/figures/morphology_of_flowering_plants_kattar_neet_2026_botany_by_rupesh_chaudhary_sir/q_morph_kattar_051/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "Which of the following correctly represent the arrangement of calyx, corolla and androecium on the thalamus of cucumber flower?\n[DIAGRAM: Position of floral parts on thalamus showing (a) Hypogynous, (b) and (c) Perigynous, (d) Epigynous] A. ¤a. (A) B. ¤b. (B) C. ¤c. (C) D. ¤d. (D)"
+    },
+    {
+      "questionId": "q_morph_practice_031",
+      "subject": "Botany",
+      "sourcePdf": "Morphology of Flowering Plants Practice Sheet.pdf",
+      "sourceQuestionNumber": 31,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Botany/morphology_of_flowering_plants/figures/morphology_of_flowering_plants_practice_sheet/q_morph_practice_031/figure-01.jpg",
+      "hasVisual": false,
+      "validationStatus": "QUARANTINED",
+      "validationReasons": [
+        "MCQ_OPTIONS_DETECTED"
+      ],
+      "ocrSummary": "Which of the following statements is correct with respect to the given figure showing different zones of a typical root?\n[DIAGRAM: Root tip showing zones A, B, and C] A. ¤a. Part B mainly helps in absorption of water. B. ¤b. The cells of A region are very small. C. ¤c. Cells in B region are responsible for the growth of the root in length. D. ¤d. Proximal to C region is called the region of maturation."
+    },
+    {
+      "questionId": "q_morph_kattar_053",
+      "subject": "Botany",
+      "sourcePdf": "Morphology of Flowering Plants  Kattar NEET 2026  Botany By Rupesh Chaudhary Sir.pdf",
+      "sourceQuestionNumber": 53,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Botany/morphology_of_flowering_plants/figures/morphology_of_flowering_plants_kattar_neet_2026_botany_by_rupesh_chaudhary_sir/q_morph_kattar_053/figure-01.png",
+      "hasVisual": false,
+      "validationStatus": "QUARANTINED",
+      "validationReasons": [
+        "MCQ_OPTIONS_DETECTED"
+      ],
+      "ocrSummary": "Identify the incorrectly matched pair.\n(A) Part of leaf by which it is attached to the stem - Leaf base\n(B) Present at the leaf base, generally two in number - Stipules\n(C) Leaf base become swollen in some leguminous plants - Bract\n(D) Green expanded part of the leaf with veins and veinlets - Leaf blade A. ¤a. Part of leaf by which it is attached to the stem - Leaf base B. ¤b. Present at the leaf base, generally two in number - Stipules C. ¤c. Leaf base become swollen in some leguminous plants - Bract D. ¤d. Green expanded part of the leaf with veins and veinlets - Leaf blade"
+    },
+    {
+      "questionId": "q_morph_pyq_038",
+      "subject": "Botany",
+      "sourcePdf": "Morphology of Flowering PYQs.pdf",
+      "sourceQuestionNumber": 38,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "",
+      "hasVisual": false,
+      "validationStatus": "QUARANTINED",
+      "validationReasons": [
+        "ANSWER_KEY_DETECTED"
+      ],
+      "ocrSummary": "Manually Quarantined overriding audit pipeline."
+    },
+    {
+      "questionId": "q_morph_practice_005",
+      "subject": "Botany",
+      "sourcePdf": "Morphology of Flowering Plants Practice Sheet.pdf",
+      "sourceQuestionNumber": 5,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "",
+      "hasVisual": false,
+      "validationStatus": "QUARANTINED",
+      "validationReasons": [
+        "SOURCE_PAGE_CONTAMINATION",
+        "LOW_CONFIDENCE"
+      ],
+      "ocrSummary": "Manually Quarantined overriding audit pipeline."
+    },
+    {
+      "questionId": "q_morph_practice_019",
+      "subject": "Botany",
+      "sourcePdf": "Morphology of Flowering Plants Practice Sheet.pdf",
+      "sourceQuestionNumber": 19,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "",
+      "hasVisual": false,
+      "validationStatus": "QUARANTINED",
+      "validationReasons": [
+        "DUPLICATED_CONTENT",
+        "LOW_CONFIDENCE"
+      ],
+      "ocrSummary": "Manually Quarantined overriding audit pipeline."
+    },
+    {
+      "questionId": "q_bfc_kattar_2026_017",
+      "subject": "Zoology",
+      "sourcePdf": "KATTAR NEET 2026 - Body Fluids and Circulation.pdf",
+      "sourceQuestionNumber": 17,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Zoology/body_fluids_and_circulation/figures/kattar_neet_2026_body_fluids_and_circulation/q_bfc_kattar_2026_017/figure-01.jpg",
+      "hasVisual": false,
+      "validationStatus": "QUARANTINED",
+      "validationReasons": [
+        "MCQ_OPTIONS_DETECTED"
+      ],
+      "ocrSummary": "Continuous bleeding from an injured part of body is due to deficiency of :- A. ¤a. Vitamin-A B. ¤b. Vitamin-B C. ¤c. Vitamin-K D. ¤d. Vitamin-E"
+    },
+    {
+      "questionId": "q_bfc_pyq_050",
+      "subject": "Zoology",
+      "sourcePdf": "Body Fluids and Circulation  Tapasya Practice Sheet  Zoology By Samapti Sinha Ma'am.pdf",
+      "sourceQuestionNumber": 50,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Zoology/body_fluids_and_circulation/figures/body_fluids_and_circulation_tapasya_practice_sheet_zoology_by_samapti_sinha_ma_am/q_bfc_pyq_050/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "Match List – I and List – II\nList-I List-II\n(A) Hypertension (I) Sudden damage of\nheart muscle\n(B) Heart attack (II) Persistently elevated\nblood pressure\n(c) Heart failure (III) Sudden cessation of\nheart beat\n(D) Cardiac\narrest\n(IV) Inability to pump\nblood effectively\nChoose the correct answer from the options given below: A. ¤a. A-II, B-I, C-III, D-IV B. ¤b. A-II, B-IV, C-I, D-III C. ¤c. A-I, B-II, C-IV, D-III D. ¤d. A-II, B-I, C-IV, D-III"
+    },
+    {
+      "questionId": "q_bfc_pyq_033",
+      "subject": "Zoology",
+      "sourcePdf": "Body Fluids and Circulation  Tapasya Practice Sheet  Zoology By Samapti Sinha Ma'am.pdf",
+      "sourceQuestionNumber": 33,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Zoology/body_fluids_and_circulation/figures/body_fluids_and_circulation_tapasya_practice_sheet_zoology_by_samapti_sinha_ma_am/q_bfc_pyq_033/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "Identify the given portal system and choose the most\nappropriate statement about it: A. ¤a. Hepatic portal system – It consists of two sets\nof capillaries: one in the intestine (absorptive)\nand one in the liver (distributive). B. ¤b. Renal portal system – It carries deoxygenated\nblood from the digestive organs to the liver. C. ¤c. Hypophyseal portal system – It carries blood\nfrom the heart to the kidneys for filtration. D. ¤d. Hepatic portal system – It delivers oxygenated\nblood to the liver from systemic circulation."
+    },
+    {
+      "questionId": "q_bfc_practice_013",
+      "subject": "Zoology",
+      "sourcePdf": "Body Fluids and Circulation.pdf",
+      "sourceQuestionNumber": 13,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Zoology/body_fluids_and_circulation/figures/body_fluids_and_circulation/q_bfc_practice_013/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "Identify the given portal system and choose the\nmost appropriate statement about it: A. ¤a. Hepatic portal system – It consists of two sets\nof capillaries: one in the intestine (absorptive)\nand one in the liver (distributive). B. ¤b. Renal portal system – It carries deoxygenated\nblood from the digestive organs to the liver. C. ¤c. Hypophyseal portal system – It carries blood\nfrom the heart to the kidneys for filtration. D. ¤d. Hepatic portal system – It delivers\noxygenated blood to the liver from\npulmonary circulation."
+    },
+    {
+      "questionId": "q_bfc_practice_045",
+      "subject": "Zoology",
+      "sourcePdf": "Body Fluids and Circulation.pdf",
+      "sourceQuestionNumber": 45,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Zoology/body_fluids_and_circulation/figures/body_fluids_and_circulation/q_bfc_practice_045/figure-01.jpg",
+      "hasVisual": false,
+      "validationStatus": "QUARANTINED",
+      "validationReasons": [
+        "MCQ_OPTIONS_DETECTED"
+      ],
+      "ocrSummary": "How many of the following statements are\ncorrect regarding the given ECG?\n(I) The PQ segment shows atrial contraction i.e\nactual depolarization begins during the mid of\nthis segment itself.\n(II) The S–T segment reflects the plateau phase\nof ventricular action potential and the period\nwhen ventricles are fully depolarized.\n(III) The electrical activity of the heart can be\nrecorded from the body surface.\n(IV) The wave shown after T is P wave.\n(V) By counting any peaks, we can calculate the\ntotal number of heart beats.\n(VI) The PQ segment reflects the time the\nelectrical impulse takes to travel from the atria to\nthe ventricles via the atrioventricular (AV) node,\nbundle of His, and Purkinje fibers. A. ¤a. Three B. ¤b. Four C. ¤c. Five D. ¤d. Six"
+    },
+    {
+      "questionId": "q_bfc_practice_017",
+      "subject": "Zoology",
+      "sourcePdf": "Body Fluids and Circulation.pdf",
+      "sourceQuestionNumber": 17,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Zoology/body_fluids_and_circulation/figures/body_fluids_and_circulation/q_bfc_practice_017/figure-01.png",
+      "hasVisual": false,
+      "validationStatus": "QUARANTINED",
+      "validationReasons": [
+        "MCQ_OPTIONS_DETECTED"
+      ],
+      "ocrSummary": "Identify the components labelled (A-D) in the\ngiven flow chart of the blood clotting process. A. ¤a. A-Thrombo-plastinm, B-Prothrom-binase, C-\nThrombin, D-Fibrinogen B. ¤b. A-Fibrinogen, B-Thrombin, C-Prothrombinase,\nD-Thrombo-plastin C. ¤c. A-Prothrom-binase, B-Fibrinogen, C-Thrombo-\nplastin, D-Thrombin D. ¤d. A-Thromin, B-Thrombo-plastin, C-Fibrinogen,\nD-Prothrom-binase"
+    },
+    {
+      "questionId": "q_body_fluids_and_circulat_p2_q18_ajrva5",
+      "subject": "Zoology",
+      "sourcePdf": "Body Fluids and Circulation PYQs.pdf",
+      "sourceQuestionNumber": 18,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Zoology/body_fluids_and_circulation/figures/body_fluids_and_circulation_pyqs/q_body_fluids_and_circulat_p2_q18_ajrva5/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "18. Match the Column-I with Column-II (2019) Column-I Column-II A. P - wave i. Depolarisation of ventricles B. QRS complex ii. Repolarisation of ventricle C. T - wave iii. Coronary ischemia D. Reduction in size of T-wave iv. Depolarisation of atria v. Repolarisation of atria a. A-iv B-i C-ii D-iii b. A-iv B-i C-ii D-v c. A-ii B-i C-v D-iii d. A-ii B-iii C-v D-iv"
+    },
+    {
+      "questionId": "q_body_fluids_and_circulat_p2_q19_on3te1",
+      "subject": "Zoology",
+      "sourcePdf": "Body Fluids and Circulation PYQs.pdf",
+      "sourceQuestionNumber": 21931,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "",
+      "hasVisual": false,
+      "validationStatus": "QUARANTINED",
+      "validationReasons": [
+        "NEIGHBOURING_QUESTION_DETECTED",
+        "LOW_CONFIDENCE"
+      ],
+      "ocrSummary": "Manually Quarantined overriding audit pipeline."
+    },
+    {
+      "questionId": "q_body_fluids_and_circulat_p2_q23_ecy5co",
+      "subject": "Zoology",
+      "sourcePdf": "Body Fluids and Circulation PYQs.pdf",
+      "sourceQuestionNumber": 23,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Zoology/body_fluids_and_circulation/figures/body_fluids_and_circulation_pyqs/q_body_fluids_and_circulat_p2_q23_ecy5co/figure-01.jpg",
+      "hasVisual": false,
+      "validationStatus": "QUARANTINED",
+      "validationReasons": [
+        "MCQ_OPTIONS_DETECTED"
+      ],
+      "ocrSummary": "23. The diagram given here is the standard ECG of a normal person. The P-wave represents the: (2013) P Q R S T a. End of systole b. Contraction of both the atria c. Initiation of ventricular contraction d. Beginning of systole"
+    },
+    {
+      "questionId": "q_bfc_pyq_025",
+      "subject": "Zoology",
+      "sourcePdf": "Body Fluids and Circulation  Tapasya Practice Sheet  Zoology By Samapti Sinha Ma'am.pdf",
+      "sourceQuestionNumber": 25,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Zoology/body_fluids_and_circulation/figures/body_fluids_and_circulation_tapasya_practice_sheet_zoology_by_samapti_sinha_ma_am/q_bfc_pyq_025/figure-01.png",
+      "hasVisual": false,
+      "validationStatus": "QUARANTINED",
+      "validationReasons": [
+        "MCQ_OPTIONS_DETECTED"
+      ],
+      "ocrSummary": "The given diagram shows how things get to and from the liver. They are labelled as a, b, c, d, e, f which one of the following labelling is the correct one? A. ¤a. A is the hepatic portal vein and E is the hepatic vein B. ¤b. C is the intestine and F is the hepatic portal vein C. ¤c. D is the hepatic portal vein and F is the hepatic vein D. ¤d. B is the pancreatic artery and E is the hepatic artery"
+    },
+    {
+      "questionId": "q_bfc_pyq_028",
+      "subject": "Zoology",
+      "sourcePdf": "Body Fluids and Circulation  Tapasya Practice Sheet  Zoology By Samapti Sinha Ma'am.pdf",
+      "sourceQuestionNumber": 28,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Zoology/body_fluids_and_circulation/figures/body_fluids_and_circulation_tapasya_practice_sheet_zoology_by_samapti_sinha_ma_am/q_bfc_pyq_028/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "Which of the following accurately describes a normal phase of the cardiac cycle?\nOption\n(i) Heart\nchamber\nState\n(ii) Valve\nState\n(Tricuspid &\nBicuspid /\nSemilunar)\n(iii) Blood\nFlow A. ¤a. All four\nchambers\nrelaxed\nClosed/Open\nFrom\npulmonary\nveins & vena\ncava into\nventricles B. ¤b. All four\nchambers\ncontracted\nOpen/Closed\nFrom\npulmonary\nveins & vena\ncava into\natria C. ¤c. All four\nchambers\nrelaxed\nOpen/Closed\nFrom\npulmonary\nveins & vena\ncava into\nventricles\n(via atria) D. ¤d. Atria\nrelaxed,\nVentricles\ncontracted\nOpen/Closed\nFrom\nventricles to\natria"
+    },
+    {
+      "questionId": "q_bfc_practice_025",
+      "subject": "Zoology",
+      "sourcePdf": "Body Fluids and Circulation.pdf",
+      "sourceQuestionNumber": 25,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Zoology/body_fluids_and_circulation/figures/body_fluids_and_circulation/q_bfc_practice_025/figure-01.png",
+      "hasVisual": false,
+      "validationStatus": "QUARANTINED",
+      "validationReasons": [
+        "MCQ_OPTIONS_DETECTED"
+      ],
+      "ocrSummary": "The given diagram shows how things get to and from the liver. They are labelled as a, b, c, d, e, f which one of the following labelling is the correct one? A. ¤a. A-Portal vein, B-Hepatic artery, C-Hepatic vein, D-Liver B. ¤b. A-Hepatic artery, B-Hepatic portal vein, C-Hepatic vein, D-Liver C. ¤c. A-Portal vein, B-Hepatic artery, C-Intestine, D-Liver D. ¤d. A-Hepatic vein, B-Portal vein, C-Hepatic artery, D-Liver"
+    },
+    {
+      "questionId": "q_bfc_practice_053",
+      "subject": "Zoology",
+      "sourcePdf": "Body Fluids and Circulation.pdf",
+      "sourceQuestionNumber": 53,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Zoology/body_fluids_and_circulation/figures/body_fluids_and_circulation/q_bfc_practice_053/figure-01.jpg",
+      "hasVisual": false,
+      "validationStatus": "QUARANTINED",
+      "validationReasons": [
+        "MCQ_OPTIONS_DETECTED"
+      ],
+      "ocrSummary": "The given diagram shows how things get to and\nfrom the liver. They are labelled as a, b, c, d, e, f\nwhich one of the following labelling is the\ncorrect one? A. ¤a. A is the hepatic portal vein and E is the\nhepatic vein B. ¤b. C is the intestine and F is the hepatic portal\nvein C. ¤c. D is the hepatic portal vein and F is the\nhepatic vein D. ¤d. B is the pancreatic artery and E is the hepatic\nartery"
+    },
+    {
+      "questionId": "q_bfc_practice_060",
+      "subject": "Zoology",
+      "sourcePdf": "Body Fluids and Circulation.pdf",
+      "sourceQuestionNumber": 60,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Zoology/body_fluids_and_circulation/figures/body_fluids_and_circulation/q_bfc_practice_060/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "In the schematic of human blood circulation\nshown, vessels A, B, C, and D carry blood with\ndifferent oxygen partial pressures (PO ). Which\nof the following correctly identifies the vessel\ncarrying blood from the heart to the lungs, along\nwith its typical PO value and function? A. ¤a. Vessel A — Pulmonary vein, PO = 60 mm Hg;\ncarries oxygen-poor blood from body to\nheart. B. ¤b. Vessel B — Pulmonary artery, PO = 90 mm\nHg; carries oxygen-poor blood from heart to\n\nlungs. C. ¤c. Vessel C — Vena cava, PO = 45 mm Hg;\ncarries oxygen-rich blood from body to right\natrium. D. ¤d. Vessel D — Dorsal aorta, PO = 95 mm Hg;\ncarries oxygen-rich blood from heart to body."
+    },
+    {
+      "questionId": "q_bfc_pyq_024",
+      "subject": "Zoology",
+      "sourcePdf": "Body Fluids and Circulation  Tapasya Practice Sheet  Zoology By Samapti Sinha Ma'am.pdf",
+      "sourceQuestionNumber": 9,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Zoology/body_fluids_and_circulation/figures/body_fluids_and_circulation_tapasya_practice_sheet_zoology_by_samapti_sinha_ma_am/q_bfc_pyq_024/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "The figure given below shows three stages in the cardiac cycle. Which of the following sequences is correct regarding this? A. ¤a. 2, 3, 1 B. ¤b. 1, 2, 3 C. ¤c. 2, 1, 3 D. ¤d. 3, 1, 2"
+    },
+    {
+      "questionId": "q_bfc_pyq_002",
+      "subject": "Zoology",
+      "sourcePdf": "Body Fluids and Circulation  Tapasya Practice Sheet  Zoology By Samapti Sinha Ma'am.pdf",
+      "sourceQuestionNumber": 2,
+      "storageBucket": "neet-source-pdfs",
+      "storagePath": "00000000-0000-0000-0000-000000000001/Zoology/body_fluids_and_circulation/figures/body_fluids_and_circulation_tapasya_practice_sheet_zoology_by_samapti_sinha_ma_am/q_bfc_pyq_002/figure-01.jpg",
+      "hasVisual": true,
+      "validationStatus": "SAFE",
+      "validationReasons": [],
+      "ocrSummary": "Match List I with List II: (2024)\nList-I List-II\nA. P wave I. Heart muscles are\nelectrically silent.\nB. QRS\ncomplex\nII. Depolarisation of\nventricles.\nC. T wave III. Depolarisation of atria.\nD. T-P gap IV. Repolarisation of\nventricles.\nChoose the correct answer form the options giver\nbelow: A. ¤a. A-II, B-III, C-I, D-IV B. ¤b. A-IV, B-II, C-I, D-III C. ¤c. A-I, B-III, C-IV, D-II D. ¤d. A-III, B-II, C-IV, D-I"
+    }
+  ]
+}

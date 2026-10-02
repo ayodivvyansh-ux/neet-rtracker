@@ -1,0 +1,168 @@
+@import "tailwindcss";
+
+/* =========================================================
+   KATEX MATH RENDERING INTEGRITY & RECOVERY RULES
+   ========================================================= */
+
+/* 1. Prevent duplicate MathML rendering: browsers natively render <math>
+   if .katex-mathml is not hidden. Visually hide MathML strictly. */
+.katex-mathml {
+  display: none !important;
+}
+
+/* 2. Shield KaTeX SVGs from Tailwind preflight resets (display: block, max-width: 100%)
+   which cause enormous square root symbols and broken vinculum lines */
+.katex svg {
+  display: inline-block !important;
+  max-width: none !important;
+  width: initial;
+  height: inherit;
+  vertical-align: baseline;
+}
+
+/* Radical / Square root sign container and SVG */
+.katex .hide-tail {
+  width: 100% !important;
+  position: relative !important;
+  overflow: hidden !important;
+  display: inline-block !important;
+}
+
+.katex .hide-tail svg {
+  position: absolute !important;
+  left: 0 !important;
+  top: 0 !important;
+  max-width: none !important;
+  width: 400em !important;
+  height: inherit !important;
+}
+
+.katex .sqrt-sign svg {
+  display: block !important;
+  max-width: none !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.katex .sqrt {
+  display: inline-flex !important;
+  align-items: baseline;
+}
+
+.katex .vlist-t {
+  display: inline-table !important;
+  table-layout: fixed;
+}
+
+/* 3. Mathematical typography containment & natural sizing */
+.katex,
+.katex-html,
+math,
+.MathJax {
+  max-width: 100%;
+  white-space: normal;
+  text-rendering: auto;
+}
+
+.katex {
+  font-size: 1.08em;
+  line-height: 1.35;
+}
+
+/* 4. Fraction Spacing & Vertical Breathing Room:
+   Ensures expressions like R(n-1)/n have comfortable numerator/denominator clearance */
+.katex .mfrac {
+  padding: 0.15em 0.25em !important;
+  vertical-align: -0.1em;
+}
+
+.katex .mfrac .frac-line {
+  border-bottom-width: 0.05em !important;
+  margin: 0.08em 0;
+}
+
+/* Base clearance for exponents, superscripts, subscripts & numerators */
+.katex .base {
+  margin-top: 0.2em;
+  margin-bottom: 0.2em;
+  padding-top: 0.08em;
+  padding-bottom: 0.08em;
+}
+
+.katex .mord,
+.katex .minner {
+  vertical-align: baseline;
+}
+
+/* 5. Headings & paragraphs inside imported math HTML (e.g. h1.qtitle) */
+.math-content {
+  line-height: 2;
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+
+.math-content h1,
+.math-content h2,
+.math-content h3,
+.math-content h4,
+.math-content p {
+  font-size: inherit;
+  font-weight: inherit;
+  margin: 0;
+  display: inline;
+}
+
+/* 6. Option Card Layout:
+   Comfortable 56px+ min-height, 14px 18px padding, vertical centering with math */
+.option-card {
+  min-height: 56px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  transition: all 0.15s ease-in-out;
+}
+
+.option-content {
+  display: flex;
+  align-items: center;
+  flex: 1 1 0%;
+  min-width: 0;
+  line-height: 2.2;
+}
+
+.option-content .math-content {
+  line-height: 2.2;
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Long formula horizontal scrollbar styling without card distortion */
+.option-content::-webkit-scrollbar {
+  height: 4px;
+}
+
+.option-content::-webkit-scrollbar-thumb {
+  background-color: rgba(148, 163, 184, 0.4);
+  border-radius: 9999px;
+}
+
+/* Images inside option choices (e.g., graphs/diagrams for A, B, C, D) */
+.option-content img,
+.math-content img {
+  max-height: 110px;
+  width: auto;
+  object-fit: contain;
+  margin: 4px 0;
+  display: inline-block;
+  vertical-align: middle;
+  border-radius: 6px;
+}
+
+/* 7. Question Diagrams: responsive image scaling scoped ONLY to diagram containers */
+.question-diagram-img {
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
